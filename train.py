@@ -48,9 +48,6 @@ if __name__ == '__main__':
     train_total = len(train_dataset)
     test_total = len(test_dataset)
 
-    print('トレーニングデータ：{}'.format(len(train_dataset)))
-    print('テストデータ:　{} '.format(len(test_dataset)))
-
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
     print("Using device: " + str(device))
