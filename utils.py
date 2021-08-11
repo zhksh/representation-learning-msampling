@@ -82,7 +82,6 @@ def eval(model, data_loader):
     model.to(device)
     accuracy_acc = 0
     total_eval_loss = 0
-    c = 0
     with tqdm(data_loader, unit="batch") as batch_generator:
         batch_generator.set_description("Evaluation")
         for c, batch in enumerate(batch_generator, 1):
@@ -101,6 +100,7 @@ def eval(model, data_loader):
                 total=len(data_loader)*data_loader.batch_size)
 
     return accuracy_acc/len(data_loader)
+
 
 def batch_accuracy(logits, Y, batch_size):
     Y_ = torch.argmax(logits, dim=1)
