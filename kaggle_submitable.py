@@ -72,7 +72,7 @@ if __name__ == '__main__':
     print('transformers version :', transformers.__version__)
 
     data = pd.read_csv("/kaggle/input/movie-review-sentiment/train.tsv/train.tsv", delimiter='\t', usecols = ['Phrase', 'Sentiment'])
-    data = pd.read_csv("data/train.tsv", delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    #data = pd.read_csv("data/train.tsv", delimiter='\t', usecols = ['Phrase', 'Sentiment'])
 
     tokenizer = BertTokenizer.from_pretrained(conf.model_name)
     data = prc_data(data.Phrase.values, data.Sentiment.values, tokenizer)
@@ -93,10 +93,7 @@ if __name__ == '__main__':
         model.to(device)
         model.train()
 
-        epoch_loss = 0
-        local_loss = 0
-        local_acc = 0
-        acc_loss = 0
+        accuracy_acc = loss_acc = 0
         with tqdm(train_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Epoch {} ".format(epoch))
             for c, batch in enumerate(batch_generator, 1):
@@ -111,11 +108,11 @@ if __name__ == '__main__':
                 optimizer.step()
                 loss = output.loss
 
-                local_acc += batch_accuracy(output.logits, Y, train_loader.batch_size)
-                local_loss += loss.item()
+                accuracy_acc += batch_accuracy(output.logits, Y, train_loader.batch_size)
+                loss_acc += loss.item()
                 batch_generator.set_postfix(
                     loss=loss.item()/c,
-                    accuracy=100. *  local_acc / c,
+                    accuracy=100. *  accuracy_acc / c,
                     seen=c * conf.batch_size,
                     total=train_total)
 
