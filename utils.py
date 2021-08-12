@@ -27,7 +27,7 @@ def preprocess_sentences(sentences, tokenizer):
 def file_exists(filename):
     return exists(filename)
 
-def prc_data(X, Y, tokenizer, name="", split=.0, reload=False):
+def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True):
     datadir = "data/"
     if not file_exists(datadir + "train_tensor.pth") or reload:
         print("processing data")
@@ -44,13 +44,14 @@ def prc_data(X, Y, tokenizer, name="", split=.0, reload=False):
         test_masks_tensor = torch.cat(masks, dim=0)
         test_labels_tensor = torch.tensor(test_labels)
 
-        torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
-        torch.save(train_masks_tensor, datadir + "train_masks.pth")
-        torch.save(train_labels_tensor, datadir + "train_labels.pth")
+        if persist:
+            torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
+            torch.save(train_masks_tensor, datadir + "train_masks.pth")
+            torch.save(train_labels_tensor, datadir + "train_labels.pth")
 
-        torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
-        torch.save(test_masks_tensor, datadir + "test_masks.pth")
-        torch.save(test_labels_tensor, datadir + "test_labels.pth")
+            torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
+            torch.save(test_masks_tensor, datadir + "test_masks.pth")
+            torch.save(test_labels_tensor, datadir + "test_labels.pth")
 
     else:
         print("loading data")
@@ -90,7 +91,7 @@ def eval(model, data_loader):
             Y = batch[2]
 
             with torch.no_grad():
-                output = model(X, token_type_ids=None, attention_mask=X_mask,labels=Y)
+                output = model(X, token_type_ids=None, attention_mask=X_mask)
             total_eval_loss += output.loss.item()
             accuracy_acc += batch_accuracy(output.logits, Y, data_loader.batch_size)
             batch_generator.set_postfix(
