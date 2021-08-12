@@ -40,14 +40,14 @@ if __name__ == '__main__':
     train_loader = DataLoader(train_dataset, sampler = RandomSampler(train_dataset), batch_size = conf.batch_size)
     test_loader = DataLoader(test_dataset,sampler = RandomSampler(test_dataset),batch_size = conf.batch_size)
 
-    labels = data["train"]["Y"].tolist()
-    estimator =  lambda x: len(x) / len(labels) * 100
-    utils.show_barplot(labels, title="training set label dist", estimator=estimator)
-    plt.savefig('img/train_class_dist.png')
-    labels = data["test"]["Y"].tolist()
-    estimator =  lambda x: len(x) / len(labels) * 100
-    utils.show_barplot(labels, title="testset label dist", estimator=estimator)
-    plt.savefig('img/test_class_dist.png')
+    # labels = data["train"]["Y"].tolist()
+    # estimator =  lambda x: len(x) / len(labels) * 100
+    # utils.show_barplot(labels, title="training set label dist", estimator=estimator)
+    # plt.savefig('img/train_class_dist.png')
+    # labels = data["test"]["Y"].tolist()
+    # estimator =  lambda x: len(x) / len(labels) * 100
+    # utils.show_barplot(labels, title="testset label dist", estimator=estimator)
+    # plt.savefig('img/test_class_dist.png')
 
 
 
