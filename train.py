@@ -16,10 +16,8 @@ parser.add_argument("--reload", default=False, type=bool)
 parser.add_argument("--model_name", default="bert-base-uncased", type=str)
 parser.add_argument("--num_epochs", default=4, type=int )
 parser.add_argument("--learning_rate", default=0.00001, type=float)
-parser.add_argument("--data_split", default=0.1, type=float)
+parser.add_argument("--split", default=0.1, type=float)
 parser.add_argument("--batch_size", default=8, type=int)
-parser.add_argument("--eval", default=False, type=bool)
-parser.add_argument("--eval_model", type=str)
 
 conf = parser.parse_args()
 
@@ -37,11 +35,6 @@ if __name__ == '__main__':
     test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
     train_loader = DataLoader(train_dataset, sampler = RandomSampler(train_dataset), batch_size = conf.batch_size)
     test_loader = DataLoader(test_dataset,sampler = SequentialSampler(test_dataset),batch_size = conf.batch_size)
-
-    if conf.eval_model:
-       model = torch.load(conf.eval_model)
-       accuracy = utils.eval(model, test_loader)
-       exit(0)
 
     train_total = len(train_dataset)
     test_total = len(test_dataset)
