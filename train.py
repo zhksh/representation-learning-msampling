@@ -35,7 +35,7 @@ if __name__ == '__main__':
     train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], data["train"]["Y"])
     test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
     train_loader = DataLoader(train_dataset, sampler = RandomSampler(train_dataset), batch_size = conf.batch_size)
-    test_loader = DataLoader(test_dataset,sampler = SequentialSampler(test_dataset),batch_size = conf.batch_size)
+    test_loader = DataLoader(test_dataset,sampler = RandomSampler(test_dataset),batch_size = conf.batch_size)
 
     train_total = len(train_dataset)
     test_total = len(test_dataset)
