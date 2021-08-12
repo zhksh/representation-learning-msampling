@@ -52,10 +52,10 @@ if __name__ == '__main__':
 
             output = model(X,token_type_ids=None,attention_mask=X_mask)
             Y =  torch.argmax(output.logits, dim=1)
-            predictions.extend((Y.reshape())))
+            predictions.extend((Y.tolist()))
 
-    df_submission = pd.DataFrame([data.PhraseId.values, predictions], columns=['PhraseId', 'Sentiment'])
-    df_submission.to_csv("submision.tsv")
+    df_submission = pd.DataFrame(list(zip(data.PhraseId.values, predictions)), columns=['PhraseId', 'Sentiment'])
+    df_submission.to_csv("submission.tsv", index=False)
 
 
 
