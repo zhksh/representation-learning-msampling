@@ -16,10 +16,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("train_file", default="data/train.tsv", type=str)
 parser.add_argument("--reload", default=False, type=bool)
 parser.add_argument("--model_name", default="bert-base-uncased", type=str)
-parser.add_argument("--num_epochs", default=4, type=int )
+parser.add_argument("--num_epochs", default=1, type=int )
 parser.add_argument("--learning_rate", default=0.00001, type=float)
 parser.add_argument("--split", default=0.1, type=float)
-parser.add_argument("--batch_size", default=8, type=int)
+parser.add_argument("--batch_size", default=16, type=int)
 
 conf = parser.parse_args()
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     data = utils.prc_data(data.Phrase.values, data.Sentiment.values, tokenizer, split=conf.split, reload=conf.reload)
 
-    train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], )
+    train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], data["train"]["Y"])
     test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
     train_loader = DataLoader(train_dataset, sampler = RandomSampler(train_dataset), batch_size = conf.batch_size)
     test_loader = DataLoader(test_dataset,sampler = RandomSampler(test_dataset),batch_size = conf.batch_size)
