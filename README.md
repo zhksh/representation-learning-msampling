@@ -6,7 +6,7 @@ https://www.kaggle.com/c/movie-review-sentiment-analysis-kernels-only
 ## Model
 out-of-the-box pretrained ``bert-base-uncased`` from the transformers lib from huggingface with multiclassification head
 
-##Data
+## Data
 ```bash
 train.tsv is of the form 
 PhraseId	SentenceId	Phrase	Sentiment
@@ -16,6 +16,8 @@ PhraseId	SentenceId	Phrase	Sentiment
 
 ![](img/train_class_dist.png)
 
+ The dataset is clearly very unbalanced, we should have 50% acc guaranteed if the model picks 2 all the time
+Up/Downsampling shoulf be tried.
 ## Usage
 ```bash
 ./train.py path/to/training_data --split .1
