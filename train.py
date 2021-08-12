@@ -12,7 +12,6 @@ logging.set_verbosity_error()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("train_file")
-# parser.add_argument("test_file")
 parser.add_argument("--reload", default=False, type=bool)
 parser.add_argument("--model_name", default="bert-base-uncased", type=str)
 parser.add_argument("--num_epochs", default=4, type=int )
