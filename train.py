@@ -11,7 +11,7 @@ from utils import *
 logging.set_verbosity_error()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("train_file")
+parser.add_argument("--train_file", default="data/train.tsv")
 parser.add_argument("--reload", default=False, type=bool)
 parser.add_argument("--model_name", default="bert-base-uncased", type=str)
 parser.add_argument("--num_epochs", default=4, type=int )
@@ -29,7 +29,8 @@ if __name__ == '__main__':
 
     tokenizer = BertTokenizer.from_pretrained(conf.model_name)
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
-    data = utils.prc_data(data.Phrase.values, data.Sentiment.values, tokenizer, split=conf.data_split, reload=conf.reload)
+    print(data.head())
+    data = utils.prc_data(data.Phrase.values, data.Sentiment.values, tokenizer, split=conf.split, reload=conf.reload)
 
     train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], data["train"]["Y"])
     test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
