@@ -52,17 +52,13 @@ if __name__ == '__main__':
     model = BertForSequenceClassification.from_pretrained(conf.model_name, num_labels=5)
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     # print(model)
-    reporting_step = 10
     best_epoch_acc = 0
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(device)
         model.train()
 
-        epoch_loss = 0
-        local_loss = 0
-        local_acc = 0
-        acc_loss = 0
+        accuracy_acc = loss_acc = 0
         with tqdm(train_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Epoch {} ".format(epoch))
             for c, batch in enumerate(batch_generator, 1):
@@ -77,11 +73,11 @@ if __name__ == '__main__':
                 optimizer.step()
                 loss = output.loss
 
-                local_acc += utils.batch_accuracy(output.logits, Y, train_loader.batch_size)
-                local_loss += loss.item()
+                accuracy_acc += utils.batch_accuracy(output.logits, Y, train_loader.batch_size)
+                loss_acc += loss.item()
                 batch_generator.set_postfix(
                     loss=loss.item()/c,
-                    accuracy=100. *  local_acc / c,
+                    accuracy=100. *  accuracy_acc / c,
                     seen=c * conf.batch_size,
                     total=train_total)
 

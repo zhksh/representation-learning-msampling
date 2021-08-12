@@ -81,8 +81,7 @@ def eval(model, data_loader):
     model.eval()
     device = torch.device('cpu')
     model.to(device)
-    accuracy_acc = 0
-    total_eval_loss = 0
+    accuracy_acc = loss_acc = 0
     with tqdm(data_loader, unit="batch") as batch_generator:
         batch_generator.set_description("Evaluation")
         for c, batch in enumerate(batch_generator, 1):
@@ -92,10 +91,10 @@ def eval(model, data_loader):
 
             with torch.no_grad():
                 output = model(X, token_type_ids=None, attention_mask=X_mask, labels=Y)
-            total_eval_loss += output.loss.item()
+            loss_acc += output.loss.item()
             accuracy_acc += batch_accuracy(output.logits, Y, data_loader.batch_size)
             batch_generator.set_postfix(
-                loss=total_eval_loss/c,
+                loss=loss_acc/c,
                 accuracy=100. *  accuracy_acc / c,
                 seen=c * data_loader.batch_size,
                 total=len(data_loader)*data_loader.batch_size)
