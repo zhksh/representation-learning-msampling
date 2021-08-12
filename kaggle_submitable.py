@@ -2,14 +2,18 @@
 # coding: utf-8
 
 
-import zipfile
-
 import pandas as pd
 import torch
 import transformers
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from tqdm import tqdm
 from transformers import BertForSequenceClassification, BertTokenizer, logging
+
+
+# for TPU
+#import torch_xla
+#import torch_xla.core.xla_model as xm
+
 
 logging.set_verbosity_error()
 
@@ -18,17 +22,10 @@ class Object(object):
 
 conf = Object()
 
-conf.train_file = "test.tsv"
-conf.reload = False
-conf.num_epochs = 4
+conf.num_epochs = 5
 conf.learning_rate = .00001
-conf.data_split = .1
 conf.batch_size = 8
-conf.eval_model = ""
 conf.model_name = "bert-base-uncased"
-
-
-print(conf)
 
 
 
@@ -53,17 +50,16 @@ def preprocess_sentences(sentences, tokenizer):
 
 def prc_data(X, Y, tokenizer):
     print("processing data")
-
     ids, masks = preprocess_sentences(X, tokenizer)
     train_sentence_tensor = torch.cat(ids, dim=0)
     train_masks_tensor = torch.cat(masks, dim=0)
     train_labels_tensor = torch.tensor(Y)
 
     return {
-            "X": train_sentence_tensor,
-            "mask" : train_masks_tensor,
-            "Y" : train_labels_tensor
-        }
+        "X": train_sentence_tensor,
+        "mask" : train_masks_tensor,
+        "Y" : train_labels_tensor
+    }
 
 
 def batch_accuracy(logits, Y, batch_size):
@@ -75,9 +71,8 @@ def batch_accuracy(logits, Y, batch_size):
 if __name__ == '__main__':
     print('transformers version :', transformers.__version__)
 
-
-    z=zipfile.ZipFile('/kaggle/input/movie-review-sentiment-analysis-kernels-only/train.tsv.zip')
-    data = pd.read_csv(z.open('train.tsv'), delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    data = pd.read_csv("/kaggle/input/movie-review-sentiment/train.tsv/train.tsv", delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    data = pd.read_csv("data/train.tsv", delimiter='\t', usecols = ['Phrase', 'Sentiment'])
 
     tokenizer = BertTokenizer.from_pretrained(conf.model_name)
     data = prc_data(data.Phrase.values, data.Sentiment.values, tokenizer)
@@ -88,6 +83,8 @@ if __name__ == '__main__':
     train_total = len(train_dataset)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    #device = xm.xla_device()
+    #torch.set_default_tensor_type('torch.FloatTensor')
     print("Using device: " + str(device))
     model = BertForSequenceClassification.from_pretrained(conf.model_name, num_labels=5)
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
@@ -123,8 +120,7 @@ if __name__ == '__main__':
                     total=train_total)
 
 
-    z=zipfile.ZipFile('/kaggle/input/movie-review-sentiment-analysis-kernels-only/test.tsv.zip')
-    data_eval = pd.read_csv(z.open('test.tsv'),delimiter='\t',usecols = ['PhraseId','Phrase'])
+    data_eval = pd.read_csv("data/test.tsv",delimiter='\t',usecols = ['PhraseId','Phrase'])
     ids, masks = preprocess_sentences(data_eval.Phrase, tokenizer)
     ids = torch.cat(ids, dim=0)
     masks = torch.cat(masks, dim=0)

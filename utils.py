@@ -91,7 +91,7 @@ def eval(model, data_loader):
             Y = batch[2]
 
             with torch.no_grad():
-                output = model(X, token_type_ids=None, attention_mask=X_mask)
+                output = model(X, token_type_ids=None, attention_mask=X_mask, labels=Y)
             total_eval_loss += output.loss.item()
             accuracy_acc += batch_accuracy(output.logits, Y, data_loader.batch_size)
             batch_generator.set_postfix(
