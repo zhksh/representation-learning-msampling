@@ -14,6 +14,8 @@ PhraseId	SentenceId	Phrase	Sentiment
 2	1	A series	            2
 ```
 
+![](img/train_class_dist.png)
+
 ## Usage
 ```bash
 ./train.py path/to/training_data --split .1

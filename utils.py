@@ -3,7 +3,8 @@ import time
 import torch
 from os.path import exists
 from sklearn.model_selection import train_test_split
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def preprocess_sentences(sentences, tokenizer):
     ids = []
@@ -109,3 +110,11 @@ def batch_accuracy(logits, Y, batch_size):
 
 def format_ts(ts):
     return time.ctime(ts).replace(" ", "_")
+
+def show_barplot(data, title, estimator=None):
+    ax = sns.barplot(x=data, y=data,  estimator=estimator)
+    ax.set(ylabel="Percent")
+    ax.set(xlabel="Class")
+    # sns.countplot(data["train"]["Y"].tolist())
+    plt.title("{} (total {})".format(title, len(data)))
+    # plt.show()
