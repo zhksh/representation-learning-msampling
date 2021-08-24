@@ -121,4 +121,5 @@ def show_barplot(data, title, estimator=None):
 
 
 def count_parameters(model):
+    print(model.parameters())
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
