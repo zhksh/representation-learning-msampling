@@ -118,3 +118,7 @@ def show_barplot(data, title, estimator=None):
     # sns.countplot(data["train"]["Y"].tolist())
     plt.title("{} (total {})".format(title, len(data)))
     # plt.show()
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)

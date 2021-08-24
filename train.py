@@ -48,6 +48,7 @@ if __name__ == '__main__':
     # device = torch.device('cpu')
     print("Using device: " + str(device))
     model = BertForSequenceClassification.from_pretrained(conf.model_name, num_labels=5)
+    print(utils.count_parameters(model))
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     # print(model)
     best_epoch_acc = 0
