@@ -17,6 +17,7 @@ class DistilBertSentiment(nn.Module):
         self.softmax = nn.LogSoftmax(dim=1)
 
 
+    '''pick the [CLS] token for classification'''
     def forward(self, input_ids, attention_mask=None):
         outputs = self.base_model(input_ids, attention_mask=attention_mask)
         x = self.dropout(outputs.last_hidden_state[:,0,:])
@@ -26,6 +27,9 @@ class DistilBertSentiment(nn.Module):
         return x
 
 
+    def update_embeddings(self, newsize):
+        self.base_model.resize_token_embeddings(newsize)
+        
 if __name__ == '__main__':
 
     model = DistilBertSentiment(2)

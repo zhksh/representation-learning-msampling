@@ -33,7 +33,10 @@ if __name__ == '__main__':
     print('transformers version :', transformers.__version__)
 
     tokenizer = DistilBertTokenizer.from_pretrained(conf.model_name)
+    tokenizer.add_tokens(["[CLS]"])
+
     model = DistilBertSentiment(5)
+    model.update_embeddings(len(tokenizer))
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
 
