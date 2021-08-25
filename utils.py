@@ -129,6 +129,8 @@ def count_parameters(model):
 
 def sample_data(data, col_name, mode):
     class_dist = data[col_name].value_counts()
+    print("class distribution before")
+    print(class_dist)
     bound =  class_dist.values.max() if mode == "up" else class_dist.values.min()
     sampled_classes = []
     for c, count in class_dist.items():
@@ -137,5 +139,7 @@ def sample_data(data, col_name, mode):
                        n_samples=bound,
                        random_state=42)
         sampled_classes.append(ups)
-
-    return pd.concat(sampled_classes)
+    balanced = pd.concat(sampled_classes)
+    print("after")
+    print(balanced[col_name].value_counts())
+    return balanced

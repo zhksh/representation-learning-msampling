@@ -21,7 +21,7 @@ parser.add_argument("--num_epochs", default=5, type=int )
 parser.add_argument("--learning_rate", default=0.00001, type=float)
 parser.add_argument("--split", default=0.1, type=float)
 parser.add_argument("--batch_size", default=16, type=int)
-parser.add_argument("--sample", default="down", choices=['down', 'up'], type=str)
+parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
 
 
 conf = parser.parse_args()
@@ -40,6 +40,8 @@ if __name__ == '__main__':
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
     if conf.sample != "None":
+        print("{}sampling date".format(conf.sample))
+        conf.reload = True
         data = utils.sample_data(data, "Sentiment", conf.sample)
 
 
@@ -55,7 +57,7 @@ if __name__ == '__main__':
     test_total = len(test_dataset)
 
     print("trainingdata size: {}".format(train_total))
-    print("testdata size: {}".format(train_total))
+    print("testdata size: {}".format(test_total))
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
