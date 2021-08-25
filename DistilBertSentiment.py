@@ -32,10 +32,10 @@ class DistilBertSentiment(nn.Module):
         self.base_model.resize_token_embeddings(newsize)
 
 
-    def evaluate(self, data_loader):
+    def evaluate(self, data_loader, criterion):
         self.eval()
         device = torch.device('cpu')
-        model.to(device)
+        self.to(device)
         accuracy_acc = loss_acc = 0
         with tqdm(data_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Evaluation")
@@ -45,9 +45,10 @@ class DistilBertSentiment(nn.Module):
                 Y = batch[2]
 
                 with torch.no_grad():
-                    output = self(X, attention_mask=X_mask, labels=Y)
-                loss_acc += output.loss.item()
-                accuracy_acc += utils.batch_accuracy(output.logits, Y, data_loader.batch_size)
+                    output = self(X, attention_mask=X_mask)
+                loss = criterion(output, Y)
+                loss_acc += loss.item()
+                accuracy_acc += utils.batch_accuracy(output, Y, data_loader.batch_size)
                 batch_generator.set_postfix(
                     loss=loss_acc/c,
                     accuracy=100. *  accuracy_acc / c,

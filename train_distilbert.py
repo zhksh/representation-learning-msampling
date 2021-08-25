@@ -89,7 +89,7 @@ if __name__ == '__main__':
                     total=train_total)
                 pass
 
-        test_accuracy = model.evaluate(test_loader)
+        test_accuracy = model.evaluate(test_loader, criterion)
         if test_accuracy > best_epoch_acc:
             torch.save(model, "{}/{}_{}".format("checkpoints", conf.model_name, utils.format_ts(time.time())))
             best_epoch_acc = test_accuracy
