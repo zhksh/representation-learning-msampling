@@ -40,7 +40,6 @@ if __name__ == '__main__':
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
     if conf.sample != "None":
-        print("{}sampling date".format(conf.sample))
         conf.reload = True
         data = utils.sample_data(data, "Sentiment", conf.sample)
 

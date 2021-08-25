@@ -17,6 +17,7 @@ parser.add_argument("--train_file", default="data/train.tsv", type=str)
 parser.add_argument("--reload", default=False, type=bool)
 parser.add_argument("--model_name", default="bert-base-uncased", type=str)
 parser.add_argument("--split", default=0.1, type=float)
+parser.add_argument("--batch_size", default=16, type=int)
 
 conf = parser.parse_args()
 
@@ -30,7 +31,7 @@ if __name__ == '__main__':
     data_frame = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
 
 
-    data = utils.prc_data(data_frame.Phrase.values, data.Sentiment.values, tokenizer, split=conf.split, reload=conf.reload)
+    data = utils.prc_data(data_frame.Phrase.values, data_frame.Sentiment.values, tokenizer, split=conf.split, reload=conf.reload)
 
     train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], )
     test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
