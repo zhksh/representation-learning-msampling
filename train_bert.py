@@ -20,6 +20,8 @@ parser.add_argument("--num_epochs", default=5, type=int )
 parser.add_argument("--learning_rate", default=0.00001, type=float)
 parser.add_argument("--split", default=0.1, type=float)
 parser.add_argument("--batch_size", default=16, type=int)
+parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
+
 
 conf = parser.parse_args()
 
