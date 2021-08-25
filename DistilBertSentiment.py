@@ -2,6 +2,7 @@ import torch.nn as nn
 from transformers import DistilBertModel
 import utils
 import torch
+from utils import *
 
 
 class DistilBertSentiment(nn.Module):
@@ -29,6 +30,31 @@ class DistilBertSentiment(nn.Module):
 
     def update_embeddings(self, newsize):
         self.base_model.resize_token_embeddings(newsize)
+
+
+    def evaluate(self, data_loader):
+        self.eval()
+        device = torch.device('cpu')
+        model.to(device)
+        accuracy_acc = loss_acc = 0
+        with tqdm(data_loader, unit="batch") as batch_generator:
+            batch_generator.set_description("Evaluation")
+            for c, batch in enumerate(batch_generator, 1):
+                X = batch[0]
+                X_mask = batch[1]
+                Y = batch[2]
+
+                with torch.no_grad():
+                    output = self(X, attention_mask=X_mask, labels=Y)
+                loss_acc += output.loss.item()
+                accuracy_acc += utils.batch_accuracy(output.logits, Y, data_loader.batch_size)
+                batch_generator.set_postfix(
+                    loss=loss_acc/c,
+                    accuracy=100. *  accuracy_acc / c,
+                    seen=c * data_loader.batch_size,
+                    total=len(data_loader)*data_loader.batch_size)
+
+        return accuracy_acc/len(data_loader)
         
 if __name__ == '__main__':
 

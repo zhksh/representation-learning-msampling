@@ -1,18 +1,16 @@
 #!/usr/bin/python
 import argparse
+
 import pandas as pd
 import transformers
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from transformers import BertForSequenceClassification, BertTokenizer, logging
-
-from transformers import DistilBertTokenizer, DistilBertModel
-
-
-
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler
+from transformers import DistilBertTokenizer
+from transformers import logging
 
 import utils
-from utils import *
 from DistilBertSentiment import DistilBertSentiment
+from utils import *
+
 logging.set_verbosity_error()
 
 parser = argparse.ArgumentParser()
@@ -59,7 +57,9 @@ if __name__ == '__main__':
     criterion = torch.nn.CrossEntropyLoss()
 
 # print(model)
+
     best_epoch_acc = 0
+    print("number of trainable params: {}".format(utils.count_parameters(model)))
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(device)
@@ -80,7 +80,6 @@ if __name__ == '__main__':
                 loss.backward()
                 optimizer.step()
 
-
                 accuracy_acc += utils.batch_accuracy(output, Y, train_loader.batch_size)
                 loss_acc += loss.item()
                 batch_generator.set_postfix(
@@ -90,7 +89,7 @@ if __name__ == '__main__':
                     total=train_total)
                 pass
 
-        test_accuracy = utils.eval(model, test_loader)
+        test_accuracy = model.evaluate(test_loader)
         if test_accuracy > best_epoch_acc:
             torch.save(model, "{}/{}_{}".format("checkpoints", conf.model_name, utils.format_ts(time.time())))
             best_epoch_acc = test_accuracy
