@@ -5,6 +5,8 @@ from os.path import exists
 from sklearn.model_selection import train_test_split
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.utils import resample
+import pandas as pd
 
 def preprocess_sentences(sentences, tokenizer):
     ids = []
@@ -123,3 +125,17 @@ def show_barplot(data, title, estimator=None):
 def count_parameters(model):
     print(model.parameters())
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def sample_data(data, col_name, mode):
+    class_dist = data[col_name].value_counts()
+    bound =  class_dist.values.max() if mode == "up" else class_dist.values.min()
+    sampled_classes = []
+    for c, count in class_dist.items():
+        ups = resample(data[data["Sentiment"] == c],
+                       replace=True,
+                       n_samples=bound,
+                       random_state=42)
+        sampled_classes.append(ups)
+
+    return pd.concat(sampled_classes)
