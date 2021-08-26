@@ -7,6 +7,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.utils import resample
 import pandas as pd
+import argparse
+
 
 def preprocess_sentences(sentences, tokenizer):
     ids = []
@@ -30,8 +32,8 @@ def preprocess_sentences(sentences, tokenizer):
 def file_exists(filename):
     return exists(filename)
 
-def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True):
-    datadir = "data/"
+def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True, prefix = ""):
+    datadir = "data/" + prefix + "_"
     if not file_exists(datadir + "train_tensor.pth") or reload:
         print("processing data")
         train_data, test_data, train_labels, test_labels = train_test_split(
@@ -80,34 +82,6 @@ def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True):
     }
 
 
-def eval(model, data_loader):
-    model.eval()
-    device = torch.device('cpu')
-    model.to(device)
-    accuracy_acc = loss_acc = 0
-    with tqdm(data_loader, unit="batch") as batch_generator:
-        batch_generator.set_description("Evaluation")
-        for c, batch in enumerate(batch_generator, 1):
-            X = batch[0]
-            X_mask = batch[1]
-            Y = batch[2]
-
-            with torch.no_grad():
-                output = model(X, attention_mask=X_mask, labels=Y)
-            loss_acc += output.loss.item()
-            accuracy_acc += batch_accuracy(output.logits, Y, data_loader.batch_size)
-            batch_generator.set_postfix(
-                loss=loss_acc/c,
-                accuracy=100. *  accuracy_acc / c,
-                seen=c * data_loader.batch_size,
-                total=len(data_loader)*data_loader.batch_size)
-
-    return accuracy_acc/len(data_loader)
-
-
-def batch_accuracy(logits, Y, batch_size):
-    Y_ = torch.argmax(logits, dim=1)
-    return (Y_ == Y).sum().item() / batch_size
 
 
 def format_ts(ts):
@@ -122,9 +96,7 @@ def show_barplot(data, title, estimator=None):
     # plt.show()
 
 
-def count_parameters(model):
-    print(model.parameters())
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 
 
 def sample_data(data, col_name, mode):
@@ -143,3 +115,18 @@ def sample_data(data, col_name, mode):
     print("after")
     print(balanced[col_name].value_counts())
     return balanced
+
+
+def read_conf():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("train_file", default="data/train.tsv", type=str)
+    parser.add_argument("--reload", default=False, type=bool)
+    parser.add_argument("--model_name", default="distilbert-base-uncased", type=str)
+    parser.add_argument("--num_epochs", default=5, type=int )
+    parser.add_argument("--learning_rate", default=0.00001, type=float)
+    parser.add_argument("--split", default=0.1, type=float)
+    parser.add_argument("--batch_size", default=16, type=int)
+    parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
+    parser.add_argument("--name", default="", type=str)
+
+    return parser.parse_args()

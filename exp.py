@@ -29,8 +29,12 @@ print(conf)
 if __name__ == '__main__':
     print('transformers version :', transformers.__version__)
 
+
+
     tokenizer = BertTokenizer.from_pretrained(conf.model_name)
-    data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    # data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    data = pd.read_json(conf.train_file,  lines=True)
+
     data = utils.upsample_data(data, "Sentiment")
 
     data = utils.prc_data(data.Phrase.values, data.Sentiment.values, tokenizer, split=conf.split, reload=True)
