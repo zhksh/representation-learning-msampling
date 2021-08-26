@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
 import utils
-from DistilBertSentiment import DistilBertSentimentAvg
+from DistilBertSentiment import DistilBertSentimentAvg, DistilBertSentimentCLS
 from utils import *
 
 
 
 if __name__ == '__main__':
     conf = utils.read_conf()
-    model = DistilBertSentimentAvg(conf, 5)
+    model = DistilBertSentimentCLS(conf, 5)
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
 
