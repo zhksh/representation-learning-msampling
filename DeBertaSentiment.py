@@ -16,7 +16,7 @@ class DeBertaSentiment(ExperimentBase):
         self.num_classes = num_classes
 
         '''ClassificationHead'''
-        self.hidden = nn.Linear(768, hidden_size)
+        self.hidden = nn.Linear(self.base_model.encoder.rel_embeddings.embedding_dim, hidden_size)
         self.classifier = nn.Linear(hidden_size, num_classes)
         self.dropout = nn.Dropout(dropout_rate)
         self.activation = nn.Tanh()
@@ -70,7 +70,7 @@ class DeBertaSentimentAvg(DeBertaSentiment):
 
 
 class DeBertaSentimentCLS(DeBertaSentiment):
-    def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
+    def __init__(self, conf, num_classes, hidden_size = 1024, dropout_rate=0.3):
         super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
 
 

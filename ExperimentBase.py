@@ -17,6 +17,7 @@ class ExperimentBase(nn.Module):
         self.base_model = None
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         #self.device = torch.device('cpu')
+        self.path = "{}/{}".format("checkpoints", self.conf.model_name)
 
 
     def load_data(self, data):
