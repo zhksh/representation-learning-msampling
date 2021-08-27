@@ -87,6 +87,10 @@ def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True, prefix = "")
 def format_ts(ts):
     return time.ctime(ts).replace(" ", "_")
 
+
+def get_formatted_ts():
+    return format_ts(time.time())
+
 def show_barplot(data, title, estimator=None):
     ax = sns.barplot(x=data, y=data,  estimator=estimator)
     ax.set(ylabel="Percent")
