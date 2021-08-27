@@ -14,7 +14,7 @@ class BertSentimentWithHead(ExperimentBase):
         super(BertSentimentWithHead, self).__init__(conf)
         self.tokenizer = BertTokenizer.from_pretrained(self.conf.model_name)
         self.base_model = BertForSequenceClassification.from_pretrained(self.conf.model_name, num_labels=5)
-        self.print_info()
+
 
     def forward(self, *args, **kwargs ):
         return self.base_model(*args, **kwargs)
