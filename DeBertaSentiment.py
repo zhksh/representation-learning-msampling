@@ -8,8 +8,9 @@ from ExperimentBase import ExperimentBase
 
 class DeBertaSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
-        super(DeBertaSentiment, self).__init__(conf)
+        self.conf = conf
         self.conf.model_name = "microsoft/deberta-base"
+        super(DeBertaSentiment, self).__init__(conf)
         self.base_model = DebertaModel.from_pretrained(self.conf.model_name)
         self.tokenizer = DebertaTokenizer.from_pretrained(self.conf.model_name)
 

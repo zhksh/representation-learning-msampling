@@ -7,11 +7,11 @@ import torch, tqdm
 
 class BertSentimentWithHead(ExperimentBase):
     def __init__(self, conf):
-        super(BertSentimentWithHead, self).__init__(conf)
+        self.conf = conf
         self.conf.model_name = "bert-base-uncased"
+        super(BertSentimentWithHead, self).__init__(conf)
         self.tokenizer = BertTokenizer.from_pretrained(self.conf.model_name)
         self.base_model = BertForSequenceClassification.from_pretrained(self.conf.model_name, num_labels=5)
-
         self.print_info()
 
     def forward(self, *args, **kwargs ):

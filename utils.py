@@ -87,7 +87,7 @@ def read_conf():
     parser = argparse.ArgumentParser()
     parser.add_argument("train_file", default="data/train.tsv", type=str)
     parser.add_argument("--reload", default=False, type=bool)
-    parser.add_argument("--model_name", default="distilbert-base-uncased", type=str)
+    parser.add_argument("--model_name", default="nomodelnamegiven", type=str)
     parser.add_argument("--num_epochs", default=5, type=int )
     parser.add_argument("--learning_rate", default=0.00001, type=float)
     parser.add_argument("--split", default=0.1, type=float)

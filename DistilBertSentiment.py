@@ -8,8 +8,9 @@ from ExperimentBase import ExperimentBase
 
 class DistilBertSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
-        super(DistilBertSentiment, self).__init__(conf)
+        self.conf = conf
         self.conf.model_name = "distilbert-base-uncased"
+        super(DistilBertSentiment, self).__init__(conf)
         self.base_model = DistilBertModel.from_pretrained(self.conf.model_name)
         self.tokenizer = DistilBertTokenizer.from_pretrained(self.conf.model_name)
 
