@@ -23,6 +23,7 @@ class BertSentimentWithHead(ExperimentBase):
         device = torch.device('cpu')
         self.to(device)
         accuracy_acc = loss_acc = 0
+        losses = []
         with tqdm(data_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Evaluation")
             for c, batch in enumerate(batch_generator, 1):
@@ -33,6 +34,7 @@ class BertSentimentWithHead(ExperimentBase):
                 with torch.no_grad():
                     output = self(X, attention_mask=X_mask, labels=Y)
                 loss_acc += output.loss.item()
+                losses.append(output.loss.item())
                 accuracy_acc += self.batch_accuracy(output.logits, Y, data_loader.batch_size)
                 batch_generator.set_postfix(
                     loss=loss_acc/c,
@@ -40,7 +42,7 @@ class BertSentimentWithHead(ExperimentBase):
                     seen=c * data_loader.batch_size,
                     total=len(data_loader)*data_loader.batch_size)
 
-        return accuracy_acc/len(data_loader)
+        return accuracy_acc/len(data_loader), losses
 
 
 if __name__ == '__main__':

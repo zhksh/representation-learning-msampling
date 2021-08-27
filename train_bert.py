@@ -20,6 +20,8 @@ if __name__ == '__main__':
     # print(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     best_epoch_acc = 0
+    train_losses = []
+    test_losses = []
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -48,7 +50,9 @@ if __name__ == '__main__':
                     seen=c * conf.batch_size,
                     total=model.train_total)
 
-        test_accuracy = model.evaluate(test_loader)
+        test_accuracy, test_losses_local = model.evaluate(test_loader)
+        test_losses.extend(test_losses_local)
+        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(model.path, "loss_curve_", epoch), model.conf.model_name)
         if test_accuracy > best_epoch_acc:
             model.save()
             best_epoch_acc = test_accuracy
