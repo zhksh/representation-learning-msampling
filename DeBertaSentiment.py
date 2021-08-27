@@ -1,8 +1,8 @@
+import torch
 import torch.nn as nn
 from transformers import DebertaModel, DebertaTokenizer
+
 import utils
-import torch
-from utils import *
 from ExperimentBase import ExperimentBase
 
 

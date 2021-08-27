@@ -1,16 +1,12 @@
-from tqdm import tqdm
-import time
-import torch
-from os.path import exists
-from sklearn.model_selection import train_test_split
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.utils import resample
-import pandas as pd
 import argparse
+import time
+from os.path import exists
 
-import utils
-
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.utils import resample
 
 
 def file_exists(filename):
@@ -21,9 +17,9 @@ def data_split(X, Y, path, split=0.1):
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=split, stratify=Y)
     train_df = pd.DataFrame({"train": Y_train})
     test_df = pd.DataFrame({"test": Y_test})
-    plot_df = pd.DataFrame({"train": train_df.value_counts().values,
-                            "test": test_df.value_counts().values},
-                           index=test_df.value_counts().index)
+    plot_df = pd.DataFrame({"train": train_df['train'].value_counts().values,
+                            "test": test_df['test'].value_counts().values},
+                           index=test_df['test'].value_counts().index)
     ax = plot_df.plot.bar(rot=0)
     plt.savefig(path + "data_dist.png")
     return {"X_train" : X_train,
