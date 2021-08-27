@@ -3,6 +3,8 @@ from transformers import BertForSequenceClassification, BertTokenizer
 from ExperimentBase import ExperimentBase
 import utils
 import torch
+from utils import *
+
 
 
 class BertSentimentWithHead(ExperimentBase):
