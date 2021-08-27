@@ -5,11 +5,13 @@ from DistilBertSentiment import DistilBertSentimentAvg, DistilBertSentimentCLS
 from utils import *
 import torch
 from tqdm import tqdm
-
+import sys
 
 if __name__ == '__main__':
     conf = utils.read_conf()
     model = DistilBertSentimentCLS(conf, 5)
+    sys.stdout = open(model.path*'log', 'w')
+
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
     plt = utils.show_dist_plot(data["Sentiment"], "Class distribution")
@@ -73,5 +75,5 @@ if __name__ == '__main__':
             best_epoch_acc = test_accuracy
 
 
-
+    sys.stdout.close()
 
