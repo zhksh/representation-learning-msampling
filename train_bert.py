@@ -4,6 +4,7 @@ import utils
 from BertSentimentWithHead import BertSentimentWithHead
 from utils import *
 
+
 if __name__ == '__main__':
     conf = utils.read_conf()
     model = BertSentimentWithHead(conf)
