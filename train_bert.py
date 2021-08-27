@@ -3,7 +3,8 @@
 import utils
 from BertSentimentWithHead import BertSentimentWithHead
 from utils import *
-
+import torch
+import tqdm
 
 if __name__ == '__main__':
     conf = utils.read_conf()
