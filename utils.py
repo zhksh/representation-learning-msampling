@@ -99,7 +99,17 @@ def show_barplot(data, title, estimator=None):
     plt.title("{} (total {})".format(title, len(data)))
     # plt.show()
 
+def show_loss_plt(train_losses, test_losses, path):
 
+    plt.figure(figsize=(10,5))
+    plt.title("Training and Validation Loss")
+    plt.plot(test_losses,label="test")
+    plt.plot(train_losses,label="train")
+    plt.xlabel("#samples")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.savefig(path + ".png")
+    # plt.show()
 
 
 

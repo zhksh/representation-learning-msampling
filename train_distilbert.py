@@ -26,11 +26,13 @@ if __name__ == '__main__':
     # print(model)
 
     best_epoch_acc = 0
+    train_losses = []
+    test_losses = []
+
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
         model.train()
-
 
         accuracy_acc = loss_acc = 0
         with tqdm(train_loader, unit="batch") as batch_generator:
@@ -49,6 +51,7 @@ if __name__ == '__main__':
 
                 accuracy_acc += model.batch_accuracy(output, Y, train_loader.batch_size)
                 loss_acc += loss.item()
+                train_losses.append(loss.item())
                 batch_generator.set_postfix(
                     loss=loss.item()/c,
                     accuracy=100. *  accuracy_acc / c,
@@ -56,7 +59,9 @@ if __name__ == '__main__':
                     total=model.train_total)
 
 
-        test_accuracy = model.evaluate(test_loader, criterion)
+        test_accuracy, test_losses_local = model.evaluate(test_loader, criterion)
+        test_losses.extend(test_losses_local)
+        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(model.path, "loss_curve_", epoch))
         if test_accuracy > best_epoch_acc:
             model.save()
             best_epoch_acc = test_accuracy

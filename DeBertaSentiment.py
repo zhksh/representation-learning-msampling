@@ -55,7 +55,7 @@ class DeBertaSentiment(ExperimentBase):
 class DeBertaSentimentAvg(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-
+        self.conf.name = "avg"
 
     '''avg all hidden states for classification'''
     def forward(self, input_ids, attention_mask=None):
@@ -72,10 +72,11 @@ class DeBertaSentimentAvg(DeBertaSentiment):
 class DeBertaSentimentCLS(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 1024, dropout_rate=0.3):
         super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-
+        self.conf.name = "mean"
 
     '''pick the first token for classification'''
     def forward(self, input_ids, attention_mask=None):
+
         outputs = self.base_model(input_ids, attention_mask=attention_mask)
         x = self.dropout(outputs.last_hidden_state[:,0,:])
         x = self.activation(self.hidden(x))
@@ -86,5 +87,5 @@ class DeBertaSentimentCLS(DeBertaSentiment):
 
 if __name__ == '__main__':
     conf = utils.read_conf()
-    model = DistilBertSentiment(conf, 2)
+    model = DeBertaSentimentCLS(conf, 2)
     print(model.count_parameters())
