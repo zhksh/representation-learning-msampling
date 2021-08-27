@@ -4,15 +4,17 @@ from transformers import DebertaModel, DebertaTokenizer
 
 import utils
 from ExperimentBase import ExperimentBase
+from tqdm import tqdm
 
 
 class DeBertaSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         self.conf = conf
-        self.conf.model_name = "microsoft/deberta-base"
+        self.conf.model_name = "deberta-base"
+        self.actual_model = "microsoft/deberta-base"
         super(DeBertaSentiment, self).__init__(conf)
-        self.base_model = DebertaModel.from_pretrained(self.conf.model_name)
-        self.tokenizer = DebertaTokenizer.from_pretrained(self.conf.model_name)
+        self.base_model = DebertaModel.from_pretrained(self.actual_model)
+        self.tokenizer = DebertaTokenizer.from_pretrained(self.actual_model)
 
         self.num_classes = num_classes
 
@@ -53,8 +55,9 @@ class DeBertaSentiment(ExperimentBase):
 
 class DeBertaSentimentAvg(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
-        super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
         self.conf.name = "avg"
+        super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
+
 
     '''avg all hidden states for classification'''
     def forward(self, input_ids, attention_mask=None):
@@ -70,8 +73,9 @@ class DeBertaSentimentAvg(DeBertaSentiment):
 
 class DeBertaSentimentCLS(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 1024, dropout_rate=0.3):
-        super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
         self.conf.name = "mean"
+        super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
+
 
     '''pick the first token for classification'''
     def forward(self, input_ids, attention_mask=None):
