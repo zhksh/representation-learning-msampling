@@ -5,12 +5,12 @@ from DeBertaSentiment import DeBertaSentimentCLS, DeBertaSentimentAvg
 from utils import *
 from tqdm import tqdm
 import torch
-import sys
+
+
 
 if __name__ == '__main__':
     conf = utils.read_conf()
     model = DeBertaSentimentCLS(conf, 5)
-    sys.stdout = open(model.path*'log', 'w')
 
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
@@ -73,6 +73,5 @@ if __name__ == '__main__':
             best_epoch_acc = test_accuracy
 
 
-    sys.stdout.close()
 
 
