@@ -11,13 +11,19 @@ if __name__ == '__main__':
     model = DeBertaSentimentCLS(conf, 5)
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+    plt = utils.show_dist_plot(data["Sentiment"], "Class distribution")
+    plt.savefig(model.path +"classdist.png")
 
     if conf.sample != "None":
         conf.reload = True
         data = utils.sample_data(data, "Sentiment", conf.sample)
 
-    data = utils.prc_data(data.Phrase.values, data.Sentiment.values, model.tokenizer, split=conf.split, reload=conf.reload)
-    train_loader, test_loader = model.load_data(data)
+
+    split_data = utils.data_split(
+        data.Phrase.values, data.Sentiment.values, model.path,
+        split=model.conf.split)
+
+    train_loader, test_loader = model.load_data(split_data)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     criterion = torch.nn.CrossEntropyLoss()

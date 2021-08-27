@@ -1,5 +1,7 @@
 
 import os
+
+import pandas as pd
 import transformers
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from transformers import DistilBertTokenizer
@@ -10,23 +12,28 @@ from utils import *
 import torch
 
 class ExperimentBase(nn.Module):
+    info = {}
+
     def __init__(self, conf):
         super(ExperimentBase, self).__init__()
         logging.set_verbosity_error()
+    
         self.conf = conf
         self.base_model = None
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         #self.device = torch.device('cpu')
         self.path = "{}/{}_{}/".format("checkpoints",self.conf.model_name, self.conf.name)
-
-    def save(self):
         if not utils.exists(self.path):
             os.mkdir(self.path)
+
+
+    def save(self):
         torch.save(self, "{}/{}".format(self.path,"model.torch"))
-        with open("{}/{}".format(self.path, 'conf.txt'), 'w') as f:
-                f.write(str(self.conf))
+        with open("{}/{}".format(self.path, 'modelcard.txt'), 'w') as f:
+            f.write(self.format_info())
 
     def load_data(self, data):
+        data = self.process_data(data)
         train_dataset = TensorDataset(data["train"]["X"], data["train"]["mask"], data["train"]["Y"])
         test_dataset = TensorDataset(data["test"]["X"], data["test"]["mask"], data["test"]["Y"])
         train_loader = DataLoader(train_dataset, sampler = RandomSampler(train_dataset), batch_size = self.conf.batch_size)
@@ -68,42 +75,51 @@ class ExperimentBase(nn.Module):
         return ids, masks
 
 
-    def process_data(self, X, Y):
-        datadir = "data/" + self.conf.prefix + "_"
-        if not utils.file_exists(datadir + "train_tensor.pth") or self.reload:
-            print("processing data")
-            train_data, test_data, train_labels, test_labels = train_test_split(
-                X, Y, test_size=self.split, stratify=Y)
+    def process_data(self, data, persist=True):
+        ids, masks = self.preprocess_sentences(data["X_train"])
+        train_sentence_tensor = torch.cat(ids, dim=0)
+        train_masks_tensor = torch.cat(masks, dim=0)
+        train_labels_tensor = torch.LongTensor(data["Y_train"])
 
-            ids, masks = self.preprocess_sentences(train_data)
-            train_sentence_tensor = torch.cat(ids, dim=0)
-            train_masks_tensor = torch.cat(masks, dim=0)
-            train_labels_tensor = torch.tensor(train_labels)
+        ids, masks = self.preprocess_sentences(data["X_test"])
+        test_sentence_tensor = torch.cat(ids, dim=0)
+        test_masks_tensor = torch.cat(masks, dim=0)
+        test_labels_tensor = torch.LongTensor(data["Y_test"])
+        # datadir = "data/"
+        # if not utils.file_exists(datadir + "train_tensor.pth") or self.conf.reload:
+        #     print("processing data")
+        #
+        #     ids, masks = self.preprocess_sentences(data["X_train"])
+        #     train_sentence_tensor = torch.cat(ids, dim=0)
+        #     train_masks_tensor = torch.cat(masks, dim=0)
+        #     train_labels_tensor = torch.tensor(data["Y_train"])
+        #
+        #     ids, masks = self.preprocess_sentences(data["X_test"])
+        #     test_sentence_tensor = torch.cat(ids, dim=0)
+        #     test_masks_tensor = torch.cat(masks, dim=0)
+        #     test_labels_tensor = torch.tensor(data["Y_test"])
+        #
+        #     if persist:
+        #         torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
+        #         torch.save(train_masks_tensor, datadir + "train_masks.pth")
+        #         torch.save(train_labels_tensor, datadir + "train_labels.pth")
+        #
+        #         torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
+        #         torch.save(test_masks_tensor, datadir + "test_masks.pth")
+        #         torch.save(test_labels_tensor, datadir + "test_labels.pth")
+        #
+        # else:
+        #     print("loading data")
+        #     train_sentence_tensor = torch.load( datadir + "train_tensor.pth")
+        #     train_masks_tensor = torch.load(datadir + "train_masks.pth")
+        #     train_labels_tensor = torch.load(datadir + "train_labels.pth")
+        #
+        #     test_sentence_tensor = torch.load(datadir + "test_tensor.pth")
+        #     test_masks_tensor = torch.load(datadir + "test_masks.pth")
+        #     test_labels_tensor = torch.load(datadir + "test_labels.pth")
 
-            ids, masks = self.preprocess_sentences(test_data)
-            test_sentence_tensor = torch.cat(ids, dim=0)
-            test_masks_tensor = torch.cat(masks, dim=0)
-            test_labels_tensor = torch.tensor(test_labels)
-
-            if self.persist:
-                torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
-                torch.save(train_masks_tensor, datadir + "train_masks.pth")
-                torch.save(train_labels_tensor, datadir + "train_labels.pth")
-
-                torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
-                torch.save(test_masks_tensor, datadir + "test_masks.pth")
-                torch.save(test_labels_tensor, datadir + "test_labels.pth")
-
-        else:
-            print("loading data")
-            train_sentence_tensor = torch.load( datadir + "train_tensor.pth")
-            train_masks_tensor = torch.load(datadir + "train_masks.pth")
-            train_labels_tensor = torch.load(datadir + "train_labels.pth")
-
-            test_sentence_tensor = torch.load(datadir + "test_tensor.pth")
-            test_masks_tensor = torch.load(datadir + "test_masks.pth")
-            test_labels_tensor = torch.load(datadir + "test_labels.pth")
-
+        self.info['train tensor shape'] = train_sentence_tensor.shape
+        self.info['test tensor shape'] = train_labels_tensor.shape
         return {
             "train" : {
                 "X": train_sentence_tensor,
@@ -126,13 +142,27 @@ class ExperimentBase(nn.Module):
     # def batch_accuracy(self):
     #     raise Exception("implement batch_accuarcy !" )
 
-    def print_info(self):
-        print('transformers version :', transformers.__version__)
-        print("model: "+ self.conf.model_name)
-        print("Using device: " + str(self.device))
+    def get_info(self):
+        info = {}
+        info['ts'] = utils.get_formatted_ts()
+        info['transformers version'] = transformers.__version__
+        info ['model'] =  self.conf.model_name
+        info ['description'] = self.conf.desc
+        info ['Using device'] = str(self.device)
+        info['number of trainable params'] = "{}".format(
+            self.count_parameters())
+        info['config'] = str(self.conf)
+        info.update(self.info)
+        self.info = info
+        
+        return self.info
 
-        print("number of trainable params: {}".format(
-            self.count_parameters()))
+
+    def format_info(self):
+        info = ""
+        for d,v in self.get_info().items():
+            info += "{} : {}{}".format(d,v, "\n")
+        return info
 
     @staticmethod
     def batch_accuracy(logits, Y, batch_size):
@@ -140,6 +170,3 @@ class ExperimentBase(nn.Module):
         return (Y_ == Y).sum().item() / batch_size
 
 
-    @staticmethod
-    def format_ts(ts):
-        return time.ctime(ts).replace(" ", "_")

@@ -9,80 +9,27 @@ from sklearn.utils import resample
 import pandas as pd
 import argparse
 
+import utils
 
-def preprocess_sentences(sentences, tokenizer):
-    ids = []
-    masks = []
-    for p in sentences:
-        encoded = tokenizer.encode_plus(
-            p,
-            truncation=True,
-            add_special_tokens = True,
-            max_length = 80, ##todo
-            padding='max_length',
-            pad_to_max_length = True,
-            return_attention_mask = True,
-            return_tensors = 'pt'
-        )
-        ids.append(encoded['input_ids'])
-        masks.append(encoded['attention_mask'])
-    return ids, masks
 
 
 def file_exists(filename):
     return exists(filename)
 
-def prc_data(X, Y, tokenizer, split=.0, reload=False, persist=True, prefix = ""):
-    datadir = "data/" + prefix + "_"
-    if not file_exists(datadir + "train_tensor.pth") or reload:
-        print("processing data")
-        train_data, test_data, train_labels, test_labels = train_test_split(
-            X, Y, test_size=split, stratify=Y)
 
-        ids, masks = preprocess_sentences(train_data, tokenizer)
-        train_sentence_tensor = torch.cat(ids, dim=0)
-        train_masks_tensor = torch.cat(masks, dim=0)
-        train_labels_tensor = torch.tensor(train_labels)
-
-        ids, masks = preprocess_sentences(test_data, tokenizer)
-        test_sentence_tensor = torch.cat(ids, dim=0)
-        test_masks_tensor = torch.cat(masks, dim=0)
-        test_labels_tensor = torch.tensor(test_labels)
-
-        if persist:
-            torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
-            torch.save(train_masks_tensor, datadir + "train_masks.pth")
-            torch.save(train_labels_tensor, datadir + "train_labels.pth")
-
-            torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
-            torch.save(test_masks_tensor, datadir + "test_masks.pth")
-            torch.save(test_labels_tensor, datadir + "test_labels.pth")
-
-    else:
-        print("loading data")
-        train_sentence_tensor = torch.load( datadir + "train_tensor.pth")
-        train_masks_tensor = torch.load(datadir + "train_masks.pth")
-        train_labels_tensor = torch.load(datadir + "train_labels.pth")
-
-        test_sentence_tensor = torch.load(datadir + "test_tensor.pth")
-        test_masks_tensor = torch.load(datadir + "test_masks.pth")
-        test_labels_tensor = torch.load(datadir + "test_labels.pth")
-
-    return {
-            "train" : {
-                "X": train_sentence_tensor,
-                "mask" : train_masks_tensor,
-                "Y" : train_labels_tensor
-            },
-            "test" :{
-                "X" : test_sentence_tensor,
-                "mask": test_masks_tensor,
-                "Y" : test_labels_tensor
-            }
-    }
-
-
-
+def data_split(X, Y, path, split=0.1):
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=split, stratify=Y)
+    train_df = pd.DataFrame({"train": Y_train})
+    test_df = pd.DataFrame({"test": Y_test})
+    plot_df = pd.DataFrame({"train": train_df.value_counts().values,
+                            "test": test_df.value_counts().values},
+                           index=test_df.value_counts().index)
+    ax = plot_df.plot.bar(rot=0)
+    plt.savefig(path + "data_dist.png")
+    return {"X_train" : X_train,
+            "X_test" : X_test,
+            "Y_train" : Y_train,
+            "Y_test" : Y_test}
 
 def format_ts(ts):
     return time.ctime(ts).replace(" ", "_")
@@ -91,16 +38,21 @@ def format_ts(ts):
 def get_formatted_ts():
     return format_ts(time.time())
 
-def show_barplot(data, title, estimator=None):
+
+def show_dist_plot(data, title, estimator=None):
+    plt.clf()
+    if estimator is None:
+        estimator =  lambda x: len(x) / len(data) * 100
     ax = sns.barplot(x=data, y=data,  estimator=estimator)
     ax.set(ylabel="Percent")
     ax.set(xlabel="Class")
     # sns.countplot(data["train"]["Y"].tolist())
     plt.title("{} (total {})".format(title, len(data)))
     # plt.show()
+    return plt
 
 def show_loss_plt(train_losses, test_losses, path, name):
-
+    plt.clf()
     plt.figure(figsize=(10,5))
     plt.title("Training and Validation Loss ({})".format(name))
     plt.plot(test_losses,label="test")
@@ -142,5 +94,6 @@ def read_conf():
     parser.add_argument("--batch_size", default=16, type=int)
     parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
     parser.add_argument("--name", default="", type=str)
+    parser.add_argument("--desc", default="", type=str)
 
     return parser.parse_args()

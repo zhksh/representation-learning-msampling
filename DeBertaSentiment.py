@@ -22,8 +22,6 @@ class DeBertaSentiment(ExperimentBase):
         self.activation = nn.Tanh()
         self.softmax = nn.LogSoftmax(dim=1)
 
-        self.print_info()
-
 
     def evaluate(self, data_loader, criterion):
         self.eval()
