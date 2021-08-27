@@ -4,6 +4,8 @@ import utils
 import torch
 from utils import *
 from ExperimentBase import ExperimentBase
+from tqdm import tqdm
+
 
 
 class DistilBertSentiment(ExperimentBase):
