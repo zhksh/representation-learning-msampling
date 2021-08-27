@@ -4,8 +4,7 @@ import utils
 from BertSentimentWithHead import BertSentimentWithHead
 from utils import *
 import torch
-import tqdm
-
+from tqdm import tqdm
 if __name__ == '__main__':
     conf = utils.read_conf()
     model = BertSentimentWithHead(conf)

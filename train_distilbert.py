@@ -3,7 +3,8 @@
 import utils
 from DistilBertSentiment import DistilBertSentimentAvg, DistilBertSentimentCLS
 from utils import *
-
+import torch
+from tqdm import tqdm
 
 
 if __name__ == '__main__':
