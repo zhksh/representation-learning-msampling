@@ -3,7 +3,6 @@ from transformers import BertForSequenceClassification, BertTokenizer
 from ExperimentBase import ExperimentBase
 import utils
 import torch
-from tqdm import tqdm
 
 
 class BertSentimentWithHead(ExperimentBase):
