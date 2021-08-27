@@ -21,6 +21,7 @@ if __name__ == '__main__':
 
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     criterion = torch.nn.CrossEntropyLoss()
+    model.criterion = criterion
 
     # print(model)
 
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
         test_accuracy = model.evaluate(test_loader, criterion)
         if test_accuracy > best_epoch_acc:
-            torch.save(model, "{}/{}_{}".format("checkpoints", conf.model_name, utils.format_ts(time.time())))
+            model.save()
             best_epoch_acc = test_accuracy
 
 
