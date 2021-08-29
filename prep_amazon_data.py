@@ -1,21 +1,25 @@
 #!/usr/bin/python
+import pandas as pd
 
 import utils
 from utils import *
-
+import json
 conf = utils.read_conf()
 
 
 if __name__ == "__main__":
-    data = pd.read_json(conf.train_file,  lines=True)
-    #unnest style struct
-    style_col = pd.json_normalize(data["style"])
-    data['style'] = style_col
-    #make consistent to rating of kaggle data 0-4
-    data.overall = data.overall.apply(lambda x : x-1)
-    data = data[data['style'] != " Audio CD"]
-    target_df = pd.DataFrame({"Sentiment" :data.overall, "Phrase" : data.reviewText})
-    sampled = utils.sample_data(target_df, "Sentiment", conf.sample)
+    json_data = []
+    with open(conf.train_file, 'r') as f:
+        for line in f.readlines():
+            line = line.replace('\n', '')
+            item = json.loads(line)
+            if item['style']['Format:'] == ' Audio CD': continue
+            item['overall'] -= 1
+            json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
+
+    data = pd.DataFrame(json_data)
+    del json_data
+    sampled = utils.sample_data(data, "Sentiment", conf.sample)
 
     plt = utils.show_dist_plot(sampled.Sentiment.values, "Class distribution")
     plt.savefig("{}{}.png".format(conf.train_file, "_classdist"))
