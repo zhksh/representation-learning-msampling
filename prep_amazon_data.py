@@ -14,7 +14,7 @@ if __name__ == "__main__":
             line = line.replace('\n', '')
             item = json.loads(line)
             try:
-                if item['style']['Format:'] == ' Audio CD': continue
+                if 'style' in item and item['style']['Format:'] == ' Audio CD': continue
                 item['overall'] -= 1
                 json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
             except Exception as e:
