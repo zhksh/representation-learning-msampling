@@ -23,7 +23,7 @@ if __name__ == '__main__':
     X_mask = torch.cat(masks, dim=0)
     Y = torch.LongTensor(data_eval.Sentiment.values)
     test_dataset = TensorDataset(X, X_mask, Y)
-    test_loader = DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size = 1)
+    test_loader = DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size = 16)
 
     accuracy = model.evaluate(test_loader, torch.nn.CrossEntropyLoss())
 
