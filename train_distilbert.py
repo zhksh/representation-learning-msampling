@@ -67,8 +67,11 @@ if __name__ == '__main__':
 
         test_accuracy, test_losses_local = model.evaluate(test_loader, criterion)
         test_losses.extend(test_losses_local)
-        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(
-            model.path, "loss_curve_", epoch), model.conf.model_name)
+        utils.show_loss_plt(train_losses, test_losses,
+                            "{}/{}_{}".format(
+            model.path, "loss_curve_", epoch),
+                            "{} epoch {}".format(
+                                model.conf.model_name , epoch))
         if test_accuracy > best_epoch_acc:
             model.save()
             best_epoch_acc = test_accuracy

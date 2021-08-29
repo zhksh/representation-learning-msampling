@@ -53,7 +53,7 @@ def show_loss_plt(train_losses, test_losses, path, name):
     plt.title("Training and Validation Loss ({})".format(name))
     plt.plot(test_losses,label="test")
     plt.plot(train_losses,label="train")
-    plt.xlabel("#samples")
+    plt.xlabel("#batches")
     plt.ylabel("Loss")
     plt.legend()
     plt.savefig(path + ".png")
