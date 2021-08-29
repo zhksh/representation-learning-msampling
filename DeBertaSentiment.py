@@ -26,18 +26,20 @@ class DeBertaSentiment(ExperimentBase):
         self.softmax = nn.LogSoftmax(dim=1)
 
 
-    def evaluate(self, data_loader, criterion):
+    def evaluate(self, data_loader, criterion, device=None):
         self.eval()
-        device = torch.device('cpu')
+        if device is None:
+            device = self.device
+        # device = torch.device('cpu')
         self.to(device)
         accuracy_acc = loss_acc = 0
         losses = []
         with tqdm(data_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Evaluation")
             for c, batch in enumerate(batch_generator, 1):
-                X = batch[0]
-                X_mask = batch[1]
-                Y = batch[2]
+                X = batch[0].to(device)
+                X_mask = batch[1].to(device)
+                Y = batch[2].to(device)
 
                 with torch.no_grad():
                     output = self(X, attention_mask=X_mask)
