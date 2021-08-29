@@ -14,8 +14,7 @@ if __name__ == "__main__":
             line = line.replace('\n', '')
             item = json.loads(line)
             try:
-                if 'reviewText' not in item or \
-                    'style' in item and item['style']['Format:'] == ' Audio CD': continue
+                if 'reviewText' not in item : continue
                 item['overall'] -= 1
                 json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
             except Exception as e:
