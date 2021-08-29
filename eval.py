@@ -2,15 +2,9 @@
 
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
-from transformers import logging
 
-from utils import *
 import utils
-logging.set_verbosity_error()
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--eval_file", type=str)
-
+from utils import *
 
 if __name__ == '__main__':
     conf = utils.read_conf()

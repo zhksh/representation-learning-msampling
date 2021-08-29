@@ -91,5 +91,7 @@ def read_conf():
     parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
     parser.add_argument("--name", default="", type=str)
     parser.add_argument("--desc", default="", type=str)
+    parser.add_argument("--eval_file", type=str)
+
 
     return parser.parse_args()
