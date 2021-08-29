@@ -56,9 +56,10 @@ if __name__ == '__main__':
 
                 accuracy_acc += model.batch_accuracy(output, Y, train_loader.batch_size)
                 loss_acc += loss.item()
-                train_losses.append(loss.item())
+                loss_batch_avg = loss_acc / c
+                train_losses.append(loss_batch_avg)
                 batch_generator.set_postfix(
-                    loss=loss.item()/c,
+                    loss=loss_batch_avg,
                     accuracy=100. *  accuracy_acc / c,
                     seen=c * conf.batch_size,
                     total=model.train_total)
