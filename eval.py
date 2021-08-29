@@ -25,7 +25,7 @@ if __name__ == '__main__':
     test_dataset = TensorDataset(X, X_mask, Y)
     test_loader = DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size = 1)
 
-    accuracy = model.evaluate(model.test_loader, torch.nn.CrossEntropyLoss())
+    accuracy = model.evaluate(test_loader, torch.nn.CrossEntropyLoss())
 
 
 
