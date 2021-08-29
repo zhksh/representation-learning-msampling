@@ -13,10 +13,12 @@ if __name__ == "__main__":
         for line in f.readlines():
             line = line.replace('\n', '')
             item = json.loads(line)
-            if item['style']['Format:'] == ' Audio CD': continue
-            item['overall'] -= 1
-            json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
-
+            try:
+                if item['style']['Format:'] == ' Audio CD': continue
+                item['overall'] -= 1
+                json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
+            except Exception as e:
+                print(str(e))
     data = pd.DataFrame(json_data)
     del json_data
     sampled = utils.sample_data(data, "Sentiment", conf.sample)
