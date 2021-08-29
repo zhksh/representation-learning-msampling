@@ -119,7 +119,7 @@ class ExperimentBase(nn.Module):
         #     test_labels_tensor = torch.load(datadir + "test_labels.pth")
 
         self.info['train tensor shape'] = train_sentence_tensor.shape
-        self.info['test tensor shape'] = train_labels_tensor.shape
+        self.info['test tensor shape'] = test_labels_tensor.shape
         return {
             "train" : {
                 "X": train_sentence_tensor,
