@@ -38,10 +38,11 @@ class BertSentimentWithHead(ExperimentBase):
                 with torch.no_grad():
                     output = self(X, attention_mask=X_mask, labels=Y)
                 loss_acc += output.loss.item()
-                losses.append(output.loss.item())
+                losses_batch_avg = loss_acc / c
+                losses.append(losses_batch_avg)
                 accuracy_acc += self.batch_accuracy(output.logits, Y, data_loader.batch_size)
                 batch_generator.set_postfix(
-                    loss=loss_acc/c,
+                    loss=losses_batch_avg,
                     accuracy=100. *  accuracy_acc / c,
                     seen=c * data_loader.batch_size,
                     total=len(data_loader)*data_loader.batch_size)
