@@ -22,8 +22,11 @@ if __name__ == "__main__":
                 print(e)
     data = pd.DataFrame(json_data)
     del json_data
+    plt = utils.show_dist_plot(data.Sentiment.values, "Class distribution before " +conf.sample+"sampling")
+    plt.savefig("{}{}.png".format(conf.train_file, "_classdist_before"))
+
     sampled = utils.sample_data(data, "Sentiment", conf.sample)
 
-    plt = utils.show_dist_plot(sampled.Sentiment.values, "Class distribution")
-    plt.savefig("{}{}.png".format(conf.train_file, "_classdist"))
+    plt = utils.show_dist_plot(sampled.Sentiment.values, "Class distribution after " +conf.sample+"sampling")
+    plt.savefig("{}{}.png".format(conf.train_file, "_classdist_after"))
     sampled.to_csv('data/test_reference.tsv', sep = '\t')
