@@ -39,6 +39,6 @@ if __name__ == "__main__":
     split = utils.data_split(sampled.Phrase.values, sampled.Sentiment.values, "data/reference")
     # this will give as a stratified subset, the original set is really large
     reduced_data = pd.DataFrame({'Sentiment': split['Y_test'], 'Phrase': split['X_test']})
-    plt = utils.show_dist_plot(sampled.Sentiment.values, "Class distribution of subset after " +conf.sample+"sampling")
+    plt = utils.show_dist_plot(reduced_data.Sentiment.values, "Class distribution of subset after " +conf.sample+"sampling")
     plt.savefig("{}{}.png".format(conf.train_file, "_subset_classdist_after"))
     reduced_data.to_csv('data/test_reference.tsv', sep = '\t')
