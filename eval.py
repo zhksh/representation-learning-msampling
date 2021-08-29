@@ -5,19 +5,15 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from transformers import logging
 
 from utils import *
-
+import utils
 logging.set_verbosity_error()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--loader_path", type=str)
-parser.add_argument("path", type=str)
-
-conf = parser.parse_args()
-
-print(conf)
+parser.add_argument("--eval_file", type=str)
 
 
 if __name__ == '__main__':
+    conf = utils.read_conf()
     model = torch.load(conf.path + "/model.torch")
 
     data_eval = pd.read_csv(conf.eval_file, delimiter='\t',usecols = ['Phrase','Sentiment'])
