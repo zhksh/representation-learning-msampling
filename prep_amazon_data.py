@@ -18,7 +18,8 @@ if __name__ == "__main__":
                 item['overall'] -= 1
                 json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
             except Exception as e:
-                print(str(e))
+                print(line)
+                print(e)
     data = pd.DataFrame(json_data)
     del json_data
     sampled = utils.sample_data(data, "Sentiment", conf.sample)
