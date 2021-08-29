@@ -21,7 +21,7 @@ if __name__ == '__main__':
     ids, masks = model.preprocess_sentences(data_eval.Phrase.values)
     X = torch.cat(ids, dim=0)
     X_mask = torch.cat(masks, dim=0)
-    Y = torch.tensor(data_eval.Sentiment.values)
+    Y = torch.LongTensor(data_eval.Sentiment.values)
     test_dataset = TensorDataset(X, X_mask, Y)
     test_loader = DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size = 1)
 
