@@ -64,7 +64,7 @@ class ExperimentBase(nn.Module):
                 p,
                 truncation=True,
                 add_special_tokens = True,
-                max_length = 80, ##todo
+                max_length = self.conf.max_length, ##todo
                 padding='max_length',
                 pad_to_max_length = True,
                 return_attention_mask = True,
