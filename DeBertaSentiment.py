@@ -32,8 +32,6 @@ class DeBertaSentimentAvg(DeBertaSentiment):
         super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
 
 
-
-
     '''avg all hidden states for classification'''
     def forward(self, input_ids, attention_mask=None):
 
