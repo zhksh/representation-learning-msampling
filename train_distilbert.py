@@ -79,9 +79,9 @@ if __name__ == '__main__':
             model.path, "accuracy_curve_", epoch),
                             "{} epoch {}".format(
                                 model.conf.model_name , epoch))
-        if test_accuracy > best_epoch_acc:
+        if test_accuracy_local > best_epoch_acc:
             model.save()
-            best_epoch_acc = test_accuracy
+            best_epoch_acc = test_accuracy_local
 
 
 

@@ -7,7 +7,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
-
+import numpy as np
 
 def file_exists(filename):
     return exists(filename)
@@ -74,7 +74,14 @@ def sample_data(data, col_name, mode):
     class_dist = data[col_name].value_counts()
     print("class distribution before {}sampling".format(mode))
     print(class_dist)
-    bound =  class_dist.values.max() if mode == "up" else class_dist.values.min()
+    bound = None
+    if mode == "up":
+        bound = class_dist.values.max()
+    elif mode == "down":
+        bound = class_dist.values.min()
+    elif mode == "middle":
+        bound = class_dist.values.max()
+    bound =  np.median(class_dist.values)
     sampled_classes = []
     for c, count in class_dist.items():
         ups = resample(data[data["Sentiment"] == c],
