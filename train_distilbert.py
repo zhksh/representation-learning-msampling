@@ -33,8 +33,8 @@ if __name__ == '__main__':
     best_epoch_acc = 0
     train_losses = []
     test_losses = []
-    train_accuracy = []
-    test_accuracy = []
+    train_accuracies = []
+    test_accuracies = []
 
     print("starting training")
     for epoch in range(conf.num_epochs):
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                 accuracy = model.batch_accuracy(output, Y, train_loader.batch_size)
                 accuracy_acc += accuracy
                 accuracy_acc_avg = accuracy_acc / c
-                train_accuracy.append(accuracy_acc_avg)
+                train_accuracies.append(accuracy_acc_avg)
                 loss_acc += loss.item()
                 loss_batch_avg = loss_acc / c
                 train_losses.append(loss_batch_avg)
@@ -69,20 +69,21 @@ if __name__ == '__main__':
                     total=model.train_total)
 
         #per epoch
-        test_accuracy_local, test_losses_local = model.evaluate(test_loader, criterion)
-        test_accuracy.append(test_accuracy_local)
+        test_accuracies, test_losses_local = model.evaluate(test_loader, criterion)
+        test_accuracies.extend(test_accuracies)
         test_losses.extend(test_losses_local)
         utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(
             model.path, "loss_curve_", epoch),
                             "{} epoch {}".format(
                                 model.conf.model_name , epoch))
-        utils.show_acc_plt(train_accuracy, test_accuracy, "{}/{}_{}".format(
+        utils.show_acc_plt(train_accuracies, test_accuracies, "{}/{}_{}".format(
             model.path, "accuracy_curve_", epoch),
                             "{} epoch {}".format(
                                 model.conf.model_name , epoch))
-        if test_accuracy_local > best_epoch_acc:
+        epoch_test_accuarcy = sum(test_accuracies)/len(test_accuracies)
+        if  epoch_test_accuarcy > best_epoch_acc:
             model.save()
-            best_epoch_acc = test_accuracy_local
+            best_epoch_acc = epoch_test_accuarcy
 
 
 

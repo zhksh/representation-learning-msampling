@@ -37,6 +37,7 @@ class DistilBertSentiment(ExperimentBase):
             criterion = self.criterion
         accuracy_acc = loss_acc = 0
         losses = []
+        accuracies = []
         with tqdm(data_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Evaluation")
             for c, batch in enumerate(batch_generator, 1):
@@ -51,13 +52,15 @@ class DistilBertSentiment(ExperimentBase):
                 loss_batch_avg = loss_acc /c
                 losses.append(loss_batch_avg)
                 accuracy_acc += self.batch_accuracy(output, Y, data_loader.batch_size)
+                accuracy_avg = accuracy_acc /c
+                accuracies.append(accuracy_avg)
                 batch_generator.set_postfix(
                     loss=loss_batch_avg,
-                    accuracy=100. *  accuracy_acc / c,
+                    accuracy=100. *  accuracy_avg,
                     seen=c * data_loader.batch_size,
                     total=len(data_loader)*data_loader.batch_size)
 
-        return accuracy_acc/len(data_loader), losses
+        return accuracies, losses
 
 
 
