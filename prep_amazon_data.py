@@ -4,10 +4,10 @@ import pandas as pd
 import utils
 from utils import *
 import json
-conf = utils.read_conf()
 
 
 if __name__ == "__main__":
+    conf = utils.read_conf()
     data = None
     if conf.reload or not utils.exists("data/test_reference_full.tsv"):
         json_data = []
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     plt.savefig("{}{}.png".format(conf.train_file, "_classdist_after"))
     sampled.to_csv('data/test_reference_full.tsv', sep = '\t')
 
-    split = utils.data_split(sampled.Phrase.values, sampled.Sentiment.values, "data/reference")
+    split = utils.data_split(sampled.Phrase.values, sampled.Sentiment.values, "data/reference", split=conf.split)
     # this will give as a stratified subset, the original set is really large
     reduced_data = pd.DataFrame({'Sentiment': split['Y_test'], 'Phrase': split['X_test']})
     plt = utils.show_dist_plot(reduced_data.Sentiment.values, "Class distribution of subset after " +conf.sample+"sampling")
