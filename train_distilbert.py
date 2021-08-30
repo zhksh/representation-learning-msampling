@@ -35,7 +35,6 @@ if __name__ == '__main__':
     test_losses = []
     train_accuracies = []
     test_accuracies = []
-
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)

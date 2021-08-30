@@ -48,6 +48,11 @@ class ExperimentBase(nn.Module):
         return train_loader, self.test_loader
 
 
+    def add_token(self, token):
+        self.tokenizer.add_tokens([token])
+        self.update_embeddings(len(self.tokenizer))
+
+
     def update_embeddings(self, newsize):
         self.base_model.resize_token_embeddings(newsize)
 
@@ -64,7 +69,7 @@ class ExperimentBase(nn.Module):
                 p,
                 truncation=True,
                 add_special_tokens = True,
-                max_length = self.conf.max_length, ##todo
+                max_length = self.conf.max_length,
                 padding='max_length',
                 pad_to_max_length = True,
                 return_attention_mask = True,
