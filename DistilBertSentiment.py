@@ -32,7 +32,7 @@ class DistilBertSentiment(ExperimentBase):
 class DistilBertSentimentAvg(DistilBertSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         super(DistilBertSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-
+        self.conf.model_name += "_avg"
 
     '''avg all hidden states for classification'''
     def forward(self, input_ids, attention_mask=None):
@@ -50,9 +50,10 @@ class DistilBertSentimentAvg(DistilBertSentiment):
 class DistilBertSentimentCLS(DistilBertSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         super(DistilBertSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
+        self.conf.model_name += "_cls"
 
 
-    '''pick the first token for classification'''
+'''pick the first token for classification'''
     def forward(self, input_ids, attention_mask=None):
         outputs = self.base_model(input_ids, attention_mask=attention_mask)
         x = self.dropout(outputs.last_hidden_state[:,0,:])
