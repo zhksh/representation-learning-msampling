@@ -31,10 +31,7 @@ if __name__ == '__main__':
     model.criterion = criterion
 
     best_epoch_acc = 0
-    train_losses = []
-    test_losses = []
-    train_accuracies = []
-    test_accuracies = []
+
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -54,35 +51,22 @@ if __name__ == '__main__':
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 loss.backward()
                 optimizer.step()
+
                 accuracy = model.batch_accuracy(output, Y, train_loader.batch_size)
-                accuracy_acc += accuracy
-                accuracy_acc_avg = accuracy_acc / c
-                train_accuracies.append(accuracy_acc_avg)
-                loss_acc += loss.item()
-                loss_batch_avg = loss_acc / c
-                train_losses.append(loss_batch_avg)
+                avg_acc, avg_loss = model.update_stats("train", accuracy, loss.item())
+
                 batch_generator.set_postfix(
-                    loss=loss_batch_avg,
-                    accuracy=100. *  accuracy_acc_avg,
+                    loss=avg_loss,
+                    accuracy=100. *  avg_acc,
                     seen=c * conf.batch_size,
                     total=model.train_total)
 
         #per epoch
-        test_accuracies, test_losses_local = model.evaluate(test_loader, criterion)
-        test_accuracies.extend(test_accuracies)
-        test_losses.extend(test_losses_local)
-        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(
-            model.path, "loss_curve_", epoch),
-                            "{} epoch {}".format(
-                                model.conf.model_name , epoch))
-        utils.show_acc_plt(train_accuracies, test_accuracies, "{}/{}_{}".format(
-            model.path, "accuracy_curve_", epoch),
-                            "{} epoch {}".format(
-                                model.conf.model_name , epoch))
-        epoch_test_accuarcy = sum(test_accuracies)/len(test_accuracies)
-        if  epoch_test_accuarcy > best_epoch_acc:
+        epoch_test_accuracy = model.evaluate(test_loader, criterion)
+
+        if  epoch_test_accuracy > best_epoch_acc:
             model.save()
-            best_epoch_acc = epoch_test_accuarcy
+            best_epoch_acc = epoch_test_accuracy
 
 
 

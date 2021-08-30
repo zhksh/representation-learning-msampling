@@ -10,6 +10,8 @@ import torch.nn as nn
 import utils
 from utils import *
 import torch
+from tqdm import tqdm
+
 
 class ExperimentBase(nn.Module):
     info = {}
@@ -25,7 +27,7 @@ class ExperimentBase(nn.Module):
         self.path = "{}/{}_{}/".format("checkpoints",self.conf.model_name, self.conf.name)
         if not utils.exists(self.path):
             os.mkdir(self.path)
-
+        self.stats = self.make_stats_dict()
 
     def save(self):
         torch.save(self, "{}/{}".format(self.path,"model.torch"))
@@ -141,11 +143,37 @@ class ExperimentBase(nn.Module):
     def forward(self):
         raise NotImplementedError("implement forward()")
 
-    def evaluate(self):
-        raise NotImplementedError("implementevaluation!" )
 
-    # def batch_accuracy(self):
-    #     raise Exception("implement batch_accuarcy !" )
+    def evaluate(self, data_loader, criterion=None, device=None):
+        self.eval()
+        if device is None:
+            device = self.device
+        # device = torch.device('cpu')
+        self.to(device)
+        if criterion is None:
+            criterion = self.criterion
+        avg_acc = 0
+        with tqdm(data_loader, unit="batch") as batch_generator:
+            batch_generator.set_description("Evaluation")
+            for c, batch in enumerate(batch_generator, 1):
+                X = batch[0].to(device)
+                X_mask = batch[1].to(device)
+                Y = batch[2].to(device)
+
+                with torch.no_grad():
+                    output = self(X, attention_mask=X_mask)
+                loss = criterion(output, Y)
+                accuracy = self.batch_accuracy(output, Y, data_loader.batch_size)
+                avg_acc, avg_loss = self.update_stats("test", accuracy, loss.item())
+
+                batch_generator.set_postfix(
+                    loss=avg_loss,
+                    accuracy=100. *  avg_acc,
+                    seen=c * data_loader.batch_size,
+                    total=len(data_loader)*data_loader.batch_size)
+
+        return avg_acc
+
 
     def get_info(self):
         info = {}
@@ -174,4 +202,34 @@ class ExperimentBase(nn.Module):
         Y_ = torch.argmax(logits, dim=1)
         return (Y_ == Y).sum().item() / batch_size
 
+    @staticmethod
+    def make_stats_dict():
+        return {
+            "train" : {
+                "accuracies" : [],
+                "losses" : []
+            },
+            "test" : {
+                "accuracies" : [],
+                "losses" : []
+            }
+        }
 
+
+    def update_stats(self,mode, acc, loss):
+        self.stats[mode]["accuracies"].append(acc)
+        self.stats[mode]["losses"].append(loss)
+
+        return sum(self.stats[mode]["accuracies"])/len(self.stats[mode]["accuracies"]), \
+               sum(self.stats[mode]["losses"])/len(self.stats[mode]["losses"])
+
+
+    def plot_epoch_stats(self, data, epoch):
+        utils.show_loss_plt(data["train"]["losses"], data["test"]["losses"], "{}/{}_{}".format(
+            self.path, "loss_curve_", epoch),
+                            "{} epoch {}".format(
+                                self.conf.model_name , epoch))
+        utils.show_acc_plt(data["train"]["accuracies"], data["test"]["accuracies"], "{}/{}_{}".format(
+            self.path, "accuracy_curve_", epoch),
+                       "{} epoch {}".format(
+                           self.conf.model_name , epoch))

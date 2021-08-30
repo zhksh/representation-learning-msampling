@@ -30,8 +30,7 @@ if __name__ == '__main__':
     # print(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     best_epoch_acc = 0
-    train_losses = []
-    test_losses = []
+
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -50,22 +49,22 @@ if __name__ == '__main__':
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 output.loss.backward()
                 optimizer.step()
-                loss = output.loss
+                accuracy = model.batch_accuracy(output.logits, Y, train_loader.batch_size)
+                avg_acc, avg_loss = model.update_stats("train", accuracy, output.loss.item())
 
-                accuracy_acc += model.batch_accuracy(output.logits, Y, train_loader.batch_size)
-                loss_acc += loss.item()
                 batch_generator.set_postfix(
-                    loss=loss.item()/c,
-                    accuracy=100. *  accuracy_acc / c,
+                    loss=avg_loss,
+                    accuracy=100. *  avg_acc,
                     seen=c * conf.batch_size,
                     total=model.train_total)
 
-        test_accuracy, test_losses_local = model.evaluate(test_loader)
-        test_losses.extend(test_losses_local)
-        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(model.path, "loss_curve_", epoch), model.conf.model_name)
-        if test_accuracy > best_epoch_acc:
+        #per epoch
+        epoch_test_accuracy = model.evaluate(test_loader)
+
+        if  epoch_test_accuracy > best_epoch_acc:
             model.save()
-            best_epoch_acc = test_accuracy
+            best_epoch_acc = epoch_test_accuracy
+
 
 
 

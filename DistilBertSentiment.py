@@ -27,41 +27,6 @@ class DistilBertSentiment(ExperimentBase):
         self.softmax = nn.LogSoftmax(dim=1)
 
 
-    def evaluate(self, data_loader, criterion=None, device=None):
-        self.eval()
-        if device is None:
-            device = self.device
-        # device = torch.device('cpu')
-        self.to(device)
-        if criterion is None:
-            criterion = self.criterion
-        accuracy_acc = loss_acc = 0
-        losses = []
-        accuracies = []
-        with tqdm(data_loader, unit="batch") as batch_generator:
-            batch_generator.set_description("Evaluation")
-            for c, batch in enumerate(batch_generator, 1):
-                X = batch[0].to(device)
-                X_mask = batch[1].to(device)
-                Y = batch[2].to(device)
-
-                with torch.no_grad():
-                    output = self(X, attention_mask=X_mask)
-                loss = criterion(output, Y)
-                loss_acc += loss.item()
-                loss_batch_avg = loss_acc /c
-                losses.append(loss_batch_avg)
-                accuracy_acc += self.batch_accuracy(output, Y, data_loader.batch_size)
-                accuracy_avg = accuracy_acc /c
-                accuracies.append(accuracy_avg)
-                batch_generator.set_postfix(
-                    loss=loss_batch_avg,
-                    accuracy=100. *  accuracy_avg,
-                    seen=c * data_loader.batch_size,
-                    total=len(data_loader)*data_loader.batch_size)
-
-        return accuracies, losses
-
 
 
 class DistilBertSentimentAvg(DistilBertSentiment):
