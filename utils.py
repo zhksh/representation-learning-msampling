@@ -110,7 +110,7 @@ def read_conf():
     parser.add_argument("--name", default="", type=str)
     parser.add_argument("--desc", default="", type=str)
     parser.add_argument("--max_length", default=165, type=int)
-    parser.add_argument("--class_mode", default="cls", choices=['cls', 'avg'], type=str)
+    parser.add_argument("--class_mode", default="", choices=['', 'cls', 'avg'], type=str)
     parser.add_argument("--cross_eval_file", default=None, type=str)
 
     return parser.parse_args()
