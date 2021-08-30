@@ -11,10 +11,10 @@ from tqdm import tqdm
 class DistilBertSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         self.conf = conf
-        self.conf.model_name = "distilbert-base-uncased"
+        self.conf.actual_name = "distilbert-base-uncased"
         super(DistilBertSentiment, self).__init__(conf)
-        self.base_model = DistilBertModel.from_pretrained(self.conf.model_name)
-        self.tokenizer = DistilBertTokenizer.from_pretrained(self.conf.model_name)
+        self.base_model = DistilBertModel.from_pretrained(self.conf.actual_name)
+        self.tokenizer = DistilBertTokenizer.from_pretrained(self.conf.actual_name)
 
         self.num_classes = num_classes
 
@@ -31,8 +31,8 @@ class DistilBertSentiment(ExperimentBase):
 
 class DistilBertSentimentAvg(DistilBertSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
+        self.conf.model_name = "distilbert-base-cls"
         super(DistilBertSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-        self.conf.model_name += "_avg"
 
     '''avg all hidden states for classification'''
     def forward(self, input_ids, attention_mask=None):
@@ -49,11 +49,11 @@ class DistilBertSentimentAvg(DistilBertSentiment):
 
 class DistilBertSentimentCLS(DistilBertSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
+        self.conf.model_name = "distilbert-base-avg"
         super(DistilBertSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-        self.conf.model_name += "_cls"
 
 
-'''pick the first token for classification'''
+    '''pick the first token for classification'''
     def forward(self, input_ids, attention_mask=None):
         outputs = self.base_model(input_ids, attention_mask=attention_mask)
         x = self.dropout(outputs.last_hidden_state[:,0,:])
