@@ -87,12 +87,14 @@ if __name__ == '__main__':
             else :
                 if bad_epochs > 0: break
                 bad_epochs += 1
-        cross_evaluation_data_loader = utils.prep_cross_eval_data(conf.cross_eval_file, reference_model)
 
-        accuracy = reference_model.evaluate(test_loader)
-        reference_model.info["cross eval score"] = accuracy
-        reference_model.info["cross eval datasize"] = len(cross_evaluation_data_loader)
-        reference_model.save()
+    print("cross evaluating with " + conf.cross_eval_file)
+    cross_evaluation_data_loader = utils.prep_cross_eval_data(conf.cross_eval_file, reference_model)
+
+    accuracy = reference_model.evaluate(test_loader)
+    reference_model.info["cross eval score"] = accuracy
+    reference_model.info["cross eval datasize"] = len(cross_evaluation_data_loader)
+    reference_model.save()
 
 
 
