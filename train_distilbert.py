@@ -63,6 +63,8 @@ if __name__ == '__main__':
 
         #per epoch
         epoch_test_accuracy = model.evaluate(test_loader, criterion)
+        model.plot_epoch_stats(epoch)
+
 
         if  epoch_test_accuracy > best_epoch_acc:
             model.save()

@@ -224,7 +224,8 @@ class ExperimentBase(nn.Module):
                sum(self.stats[mode]["losses"])/len(self.stats[mode]["losses"])
 
 
-    def plot_epoch_stats(self, data, epoch):
+    def plot_epoch_stats(self, epoch):
+        data = self.stats
         utils.show_loss_plt(data["train"]["losses"], data["test"]["losses"], "{}/{}_{}".format(
             self.path, "loss_curve_", epoch),
                             "{} epoch {}".format(
