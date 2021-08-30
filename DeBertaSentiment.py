@@ -30,7 +30,8 @@ class DeBertaSentiment(ExperimentBase):
 class DeBertaSentimentAvg(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-        self.conf.name = "avg"
+        self.conf.model_name += "_avg"
+
 
 
     '''avg all hidden states for classification'''
@@ -48,7 +49,8 @@ class DeBertaSentimentAvg(DeBertaSentiment):
 class DeBertaSentimentCLS(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 1024, dropout_rate=0.3):
         super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
-        self.conf.name = "mean"
+        self.conf.model_name += "_cls"
+
 
     '''pick the first token for classification'''
     def forward(self, input_ids, attention_mask=None):
