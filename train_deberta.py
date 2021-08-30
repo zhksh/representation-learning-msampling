@@ -5,7 +5,7 @@ from DeBertaSentiment import DeBertaSentimentCLS, DeBertaSentimentAvg
 from utils import *
 from tqdm import tqdm
 import torch
-
+import copy
 
 
 if __name__ == '__main__':
@@ -42,6 +42,7 @@ if __name__ == '__main__':
 
     best_epoch_acc = 0
     bad_epochs = 0
+    reference_model = None
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -72,14 +73,19 @@ if __name__ == '__main__':
         epoch_test_accuracy = model.evaluate(test_loader)
         model.plot_epoch_stats(epoch)
         if epoch_test_accuracy > best_epoch_acc:
+            best_epoch_acc = epoch_test_accuracy
             model.info["test_acc"] = epoch_test_accuracy
             model.info["epoch"] = epoch
-            model.save()
-            best_epoch_acc = epoch_test_accuracy
+            reference_model = copy.deepcopy(model)
         else :
-            if bad_epochs > 0: exit(0)
+            if bad_epochs > 0: break
             bad_epochs += 1
+        cross_evaluation_data_loader = utils.prep_cross_eval_data(conf.cross_eval_file, reference_model)
 
+        accuracy = reference_model.evaluate(test_loader)
+        reference_model.info["cross eval score"] = accuracy
+        reference_model.info["cross eval datasize"] = len(cross_evaluation_data_loader)
+        reference_model.save()
 
 
 

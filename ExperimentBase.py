@@ -189,6 +189,8 @@ class ExperimentBase(nn.Module):
 
 
 
+
+
     @staticmethod
     def batch_accuracy(logits, Y, batch_size):
         Y_ = torch.argmax(logits, dim=1)

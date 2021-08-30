@@ -18,6 +18,8 @@ if __name__ == "__main__":
                 try:
                     if 'reviewText' not in item : continue
                     item['overall'] -= 1
+                    if conf.class_mode == 'cls':
+                        item['reviewText'] = '[CLS] ' + item['reviewText']
                     json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
                 except Exception as e:
                     print(line)

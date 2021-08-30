@@ -8,6 +8,9 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 import numpy as np
+import torch
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler
+
 
 def file_exists(filename):
     return exists(filename)
@@ -108,5 +111,16 @@ def read_conf():
     parser.add_argument("--desc", default="", type=str)
     parser.add_argument("--max_length", default=165, type=int)
     parser.add_argument("--class_mode", default="cls", choices=['cls', 'avg'], type=str)
+    parser.add_argument("--cross_eval_file", default=None, type=str)
 
     return parser.parse_args()
+
+def prep_cross_eval_data(file_name, model):
+    data_eval = pd.read_csv(file_name, delimiter='\t',usecols = ['Phrase','Sentiment'])
+    ids, masks = model.preprocess_sentences(data_eval.Phrase.values)
+    X = torch.cat(ids, dim=0)
+    X_mask = torch.cat(masks, dim=0)
+    Y = torch.LongTensor(data_eval.Sentiment.values)
+    test_dataset = TensorDataset(X, X_mask, Y)
+
+    return DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size=model.conf.batch_size)

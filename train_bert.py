@@ -69,7 +69,12 @@ if __name__ == '__main__':
             if bad_epochs > 0: exit(0)
             bad_epochs += 1
 
+            cross_evaluation_data_loader = utils.prep_cross_eval_data(conf.cross_eval_file, model)
 
+            accuracy = model.evaluate(test_loader)
+            model.info["cross eval score"] = accuracy
+            model.info["cross eval datasize"] = len(cross_evaluation_data_loader)
+            model.save()
 
 
 
