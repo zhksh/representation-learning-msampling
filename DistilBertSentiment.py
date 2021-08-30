@@ -42,6 +42,7 @@ class DistilBertSentimentAvg(DistilBertSentiment):
         x = self.dropout(x)
         x = self.activation(self.hidden(x))
         x = self.classifier(x)
+
         return x
 
 
@@ -57,6 +58,7 @@ class DistilBertSentimentCLS(DistilBertSentiment):
         x = self.dropout(outputs.last_hidden_state[:,0,:])
         x = self.activation(self.hidden(x))
         x = self.classifier(x)
+
         return x
 
 

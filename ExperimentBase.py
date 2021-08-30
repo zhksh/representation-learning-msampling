@@ -1,16 +1,14 @@
 
 import os
 
-import pandas as pd
+import torch
+import torch.nn as nn
 import transformers
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
-from transformers import DistilBertTokenizer
-from transformers import logging
-import torch.nn as nn
-import utils
-from utils import *
-import torch
 from tqdm import tqdm
+from transformers import logging
+
+import utils
 
 
 class ExperimentBase(nn.Module):
@@ -23,11 +21,10 @@ class ExperimentBase(nn.Module):
         self.conf = conf
         self.base_model = None
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        #self.device = torch.device('cpu')
         self.path = "{}/{}_{}/".format("checkpoints",self.conf.model_name, self.conf.name)
         if not utils.exists(self.path):
             os.mkdir(self.path)
-        self.stats = self.make_stats_dict()
+        self.stats = ExperimentBase.make_stats_dict()
 
     def save(self):
         torch.save(self, "{}/{}".format(self.path,"model.torch"))
@@ -166,28 +163,6 @@ class ExperimentBase(nn.Module):
             info += "{} : {}{}".format(d,v, "\n")
         return info
 
-    @staticmethod
-    def batch_accuracy(logits, Y, batch_size):
-        Y_ = torch.argmax(logits, dim=1)
-        return (Y_ == Y).sum().item() / batch_size
-
-    @staticmethod
-    def make_stats_dict():
-        return {
-            "train" : {
-                "accuracies" : [],
-                "losses" : [],
-                "normalized_accuracies" : [],
-                "normalized_losses" : []
-            },
-            "test" : {
-                "accuracies" : [],
-                "losses" : [],
-                "normalized_accuracies" : [],
-                "normalized_losses" : []
-            }
-        }
-
 
     def update_stats(self,mode, acc, loss):
         self.stats[mode]["accuracies"].append(acc)
@@ -210,3 +185,29 @@ class ExperimentBase(nn.Module):
             self.path, "accuracy_curve_", epoch),
                        "{} epoch {}".format(
                            self.conf.model_name , epoch))
+
+
+
+
+    @staticmethod
+    def batch_accuracy(logits, Y, batch_size):
+        Y_ = torch.argmax(logits, dim=1)
+        return (Y_ == Y).sum().item() / batch_size
+
+
+    @staticmethod
+    def make_stats_dict():
+        return {
+            "train" : {
+                "accuracies" : [],
+                "losses" : [],
+                "normalized_accuracies" : [],
+                "normalized_losses" : []
+            },
+            "test" : {
+                "accuracies" : [],
+                "losses" : [],
+                "normalized_accuracies" : [],
+                "normalized_losses" : []
+            }
+        }

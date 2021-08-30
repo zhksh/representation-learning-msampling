@@ -26,11 +26,10 @@ if __name__ == '__main__':
 
     train_loader, test_loader = model.load_data(split_data)
 
-
     # print(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=conf.learning_rate)
     best_epoch_acc = 0
-
+    bad_epochs = 0
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -61,9 +60,14 @@ if __name__ == '__main__':
         epoch_test_accuracy = model.evaluate(test_loader)
         model.plot_epoch_stats(epoch)
 
-        if  epoch_test_accuracy > best_epoch_acc:
+        if epoch_test_accuracy > best_epoch_acc:
+            model.info["test_acc"] = epoch_test_accuracy
+            model.info["epoch"] = epoch
             model.save()
             best_epoch_acc = epoch_test_accuracy
+        else :
+            if bad_epochs > 0: exit(0)
+            bad_epochs += 1
 
 
 

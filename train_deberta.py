@@ -10,10 +10,16 @@ import torch
 
 if __name__ == '__main__':
     conf = utils.read_conf()
-    model = DeBertaSentimentCLS(conf, 5)
-
 
     data = pd.read_csv(conf.train_file, delimiter='\t', usecols = ['Phrase', 'Sentiment'])
+
+    num_classes = data.Sentiment.value_counts().size
+    model = None
+    if conf.class_mode == 'cls':
+        model = DeBertaSentimentCLS(conf, num_classes)
+    elif conf.class_mode == 'avg':
+        model = DeBertaSentimentAvg(conf, num_classes)
+
     plt = utils.show_dist_plot(data["Sentiment"], "Class distribution")
     plt.savefig(model.path +"classdist.png")
 
@@ -35,6 +41,7 @@ if __name__ == '__main__':
     # print(model)
 
     best_epoch_acc = 0
+    bad_epochs = 0
     print("starting training")
     for epoch in range(conf.num_epochs):
         model.to(model.device)
@@ -65,8 +72,14 @@ if __name__ == '__main__':
         epoch_test_accuracy = model.evaluate(test_loader)
         model.plot_epoch_stats(epoch)
         if epoch_test_accuracy > best_epoch_acc:
+            model.info["test_acc"] = epoch_test_accuracy
+            model.info["epoch"] = epoch
             model.save()
             best_epoch_acc = epoch_test_accuracy
+        else :
+            if bad_epochs > 0: exit(0)
+            bad_epochs += 1
+
 
 
 
