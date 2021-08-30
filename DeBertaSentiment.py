@@ -10,6 +10,7 @@ from tqdm import tqdm
 class DeBertaSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         self.conf = conf
+        self.conf.model_name = "deberta-base"
         self.actual_model = "microsoft/deberta-base"
         super(DeBertaSentiment, self).__init__(conf)
         self.base_model = DebertaModel.from_pretrained(self.actual_model)
@@ -28,8 +29,9 @@ class DeBertaSentiment(ExperimentBase):
 
 class DeBertaSentimentAvg(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
-        self.conf.model_name = "deberta-base-avg"
         super(DeBertaSentimentAvg, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
+        self.conf.model_name += "_avg"
+
 
 
     '''avg all hidden states for classification'''
@@ -46,8 +48,8 @@ class DeBertaSentimentAvg(DeBertaSentiment):
 
 class DeBertaSentimentCLS(DeBertaSentiment):
     def __init__(self, conf, num_classes, hidden_size = 1024, dropout_rate=0.3):
-        self.conf.model_name = "deberta-base-cls"
         super(DeBertaSentimentCLS, self).__init__(conf, num_classes, hidden_size=hidden_size, dropout_rate=dropout_rate )
+        self.conf.model_name += "_cls"
 
 
     '''pick the first token for classification'''
