@@ -57,17 +57,18 @@ if __name__ == '__main__':
                 optimizer.step()
                 accuracy = model.batch_accuracy(output, Y, train_loader.batch_size)
                 accuracy_acc += accuracy
-                train_accuracy.append(accuracy)
+                accuracy_acc_avg = accuracy_acc / c
+                train_accuracy.append(accuracy_acc_avg)
                 loss_acc += loss.item()
                 loss_batch_avg = loss_acc / c
                 train_losses.append(loss_batch_avg)
                 batch_generator.set_postfix(
                     loss=loss_batch_avg,
-                    accuracy=100. *  accuracy_acc / c,
+                    accuracy=100. *  accuracy_acc_avg,
                     seen=c * conf.batch_size,
                     total=model.train_total)
 
-
+        #per epoch
         test_accuracy_local, test_losses_local = model.evaluate(test_loader, criterion)
         test_accuracy.append(test_accuracy_local)
         test_losses.extend(test_losses_local)

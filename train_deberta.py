@@ -35,6 +35,8 @@ if __name__ == '__main__':
     # print(model)
     train_losses = []
     test_losses = []
+    train_accuracy = []
+    test_accuracy = []
     best_epoch_acc = 0
     print("starting training")
     for epoch in range(conf.num_epochs):
@@ -56,7 +58,8 @@ if __name__ == '__main__':
                 loss.backward()
                 optimizer.step()
 
-                accuracy_acc += model.batch_accuracy(output, Y, train_loader.batch_size)
+                accuracy = model.batch_accuracy(output, Y, train_loader.batch_size)
+                accuracy_acc += accuracy
                 loss_acc += loss.item()
                 loss_batch_avg = loss_acc / c
                 train_losses.append(loss_batch_avg)
@@ -66,13 +69,20 @@ if __name__ == '__main__':
                     seen=c * conf.batch_size,
                     total=model.train_total)
 
-
-        test_accuracy, test_losses_local = model.evaluate(test_loader, criterion)
+        test_accuracy_local, test_losses_local = model.evaluate(test_loader)
+        test_accuracy.append(test_accuracy_local)
         test_losses.extend(test_losses_local)
-        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(model.path, "loss_curve_", epoch), model.conf.model_name)
-        if test_accuracy > best_epoch_acc:
+        utils.show_loss_plt(train_losses, test_losses, "{}/{}_{}".format(
+            model.path, "loss_curve_", epoch),
+                            "{} epoch {}".format(
+                                model.conf.model_name , epoch))
+        utils.show_acc_plt(train_accuracy, test_accuracy, "{}/{}_{}".format(
+            model.path, "accuracy_curve_", epoch),
+                           "{} epoch {}".format(
+                               model.conf.model_name , epoch))
+        if test_accuracy_local > best_epoch_acc:
             model.save()
-            best_epoch_acc = test_accuracy
+            best_epoch_acc = test_accuracy_local
 
 
 
