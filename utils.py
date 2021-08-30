@@ -59,7 +59,16 @@ def show_loss_plt(train_losses, test_losses, path, name):
     plt.savefig(path + ".png")
     # plt.show()
 
-
+def show_acc_plt(train_acc, test_acc, path, name):
+    plt.clf()
+    plt.figure(figsize=(10,5))
+    plt.title("Training and Validation Accuracy ({})".format(name))
+    plt.plot(test_acc,label="test")
+    plt.plot(train_acc,label="train")
+    plt.xlabel("#batches")
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.savefig(path + ".png")
 
 def sample_data(data, col_name, mode):
     class_dist = data[col_name].value_counts()
@@ -91,6 +100,6 @@ def read_conf():
     parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
     parser.add_argument("--name", default="", type=str)
     parser.add_argument("--desc", default="", type=str)
-    parser.add_argument("--max_length", default=300, type=int)
+    parser.add_argument("--max_length", default=165, type=int)
 
     return parser.parse_args()
