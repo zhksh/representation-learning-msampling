@@ -26,7 +26,7 @@ class DeBertaSentiment(ExperimentBase):
         self.softmax = nn.LogSoftmax(dim=1)
 
 
-    def evaluate(self, data_loader, criterion, device=None):
+    def evaluate(self, data_loader, criterion=None, device=None):
         self.eval()
         if device is None:
             device = self.device
