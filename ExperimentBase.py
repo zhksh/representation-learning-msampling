@@ -19,7 +19,7 @@ class ExperimentBase(nn.Module):
     def __init__(self, conf):
         super(ExperimentBase, self).__init__()
         logging.set_verbosity_error()
-    
+
         self.conf = conf
         self.base_model = None
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -187,7 +187,7 @@ class ExperimentBase(nn.Module):
         info['config'] = str(self.conf)
         info.update(self.info)
         self.info = info
-        
+
         return self.info
 
 
@@ -207,11 +207,15 @@ class ExperimentBase(nn.Module):
         return {
             "train" : {
                 "accuracies" : [],
-                "losses" : []
+                "losses" : [],
+                "normalized_accuracies" : [],
+                "normalized_losses" : []
             },
             "test" : {
                 "accuracies" : [],
-                "losses" : []
+                "losses" : [],
+                "normalized_accuracies" : [],
+                "normalized_losses" : []
             }
         }
 
@@ -219,18 +223,21 @@ class ExperimentBase(nn.Module):
     def update_stats(self,mode, acc, loss):
         self.stats[mode]["accuracies"].append(acc)
         self.stats[mode]["losses"].append(loss)
+        normalized_acc = sum(self.stats[mode]["accuracies"])/len(self.stats[mode]["accuracies"])
+        normalized_loss = sum(self.stats[mode]["losses"])/len(self.stats[mode]["losses"])
+        self.stats[mode]["normalized_accuracies"].append(normalized_acc)
+        self.stats[mode]["normalized_losses"].append(normalized_loss)
 
-        return sum(self.stats[mode]["accuracies"])/len(self.stats[mode]["accuracies"]), \
-               sum(self.stats[mode]["losses"])/len(self.stats[mode]["losses"])
+        return normalized_acc, normalized_loss
 
 
     def plot_epoch_stats(self, epoch):
         data = self.stats
-        utils.show_loss_plt(data["train"]["losses"], data["test"]["losses"], "{}/{}_{}".format(
+        utils.show_loss_plt(data["train"]["normalized_losses"], data["test"]["normalized_losses"], "{}/{}_{}".format(
             self.path, "loss_curve_", epoch),
                             "{} epoch {}".format(
                                 self.conf.model_name , epoch))
-        utils.show_acc_plt(data["train"]["accuracies"], data["test"]["accuracies"], "{}/{}_{}".format(
+        utils.show_acc_plt(data["train"]["normalized_accuracies"], data["test"]["normalized_accuracies"], "{}/{}_{}".format(
             self.path, "accuracy_curve_", epoch),
                        "{} epoch {}".format(
                            self.conf.model_name , epoch))
