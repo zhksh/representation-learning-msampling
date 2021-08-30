@@ -103,7 +103,7 @@ def read_conf():
     parser.add_argument("--learning_rate", default=0.00001, type=float)
     parser.add_argument("--split", default=0.1, type=float)
     parser.add_argument("--batch_size", default=16, type=int)
-    parser.add_argument("--sample", default="None", choices=['down', 'up'], type=str)
+    parser.add_argument("--sample", default="None", choices=['down', 'up', 'conf'], type=str)
     parser.add_argument("--name", default="", type=str)
     parser.add_argument("--desc", default="", type=str)
     parser.add_argument("--max_length", default=165, type=int)
