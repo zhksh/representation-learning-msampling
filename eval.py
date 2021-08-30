@@ -9,7 +9,7 @@ from utils import *
 parser = argparse.ArgumentParser()
 parser.add_argument("path", type=str)
 
-parser.add_argument("--eval_file", type=str)
+parser.add_argument("eval_file", type=str)
 
 
 conf = parser.parse_args()
