@@ -37,7 +37,6 @@ if __name__ == '__main__':
         model.to(model.device)
         model.train()
 
-        accuracy_acc = loss_acc = 0
         with tqdm(train_loader, unit="batch") as batch_generator:
             batch_generator.set_description("Epoch {} ".format(epoch))
             for c, batch in enumerate(batch_generator, 1):

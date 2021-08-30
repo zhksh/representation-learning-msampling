@@ -79,6 +79,7 @@ class ExperimentBase(nn.Module):
             )
             ids.append(encoded['input_ids'])
             masks.append(encoded['attention_mask'])
+
         return ids, masks
 
 
@@ -92,38 +93,6 @@ class ExperimentBase(nn.Module):
         test_sentence_tensor = torch.cat(ids, dim=0)
         test_masks_tensor = torch.cat(masks, dim=0)
         test_labels_tensor = torch.LongTensor(data["Y_test"])
-        # datadir = "data/"
-        # if not utils.file_exists(datadir + "train_tensor.pth") or self.conf.reload:
-        #     print("processing data")
-        #
-        #     ids, masks = self.preprocess_sentences(data["X_train"])
-        #     train_sentence_tensor = torch.cat(ids, dim=0)
-        #     train_masks_tensor = torch.cat(masks, dim=0)
-        #     train_labels_tensor = torch.tensor(data["Y_train"])
-        #
-        #     ids, masks = self.preprocess_sentences(data["X_test"])
-        #     test_sentence_tensor = torch.cat(ids, dim=0)
-        #     test_masks_tensor = torch.cat(masks, dim=0)
-        #     test_labels_tensor = torch.tensor(data["Y_test"])
-        #
-        #     if persist:
-        #         torch.save(train_sentence_tensor, datadir + "train_tensor.pth")
-        #         torch.save(train_masks_tensor, datadir + "train_masks.pth")
-        #         torch.save(train_labels_tensor, datadir + "train_labels.pth")
-        #
-        #         torch.save(test_sentence_tensor, datadir + "test_tensor.pth")
-        #         torch.save(test_masks_tensor, datadir + "test_masks.pth")
-        #         torch.save(test_labels_tensor, datadir + "test_labels.pth")
-        #
-        # else:
-        #     print("loading data")
-        #     train_sentence_tensor = torch.load( datadir + "train_tensor.pth")
-        #     train_masks_tensor = torch.load(datadir + "train_masks.pth")
-        #     train_labels_tensor = torch.load(datadir + "train_labels.pth")
-        #
-        #     test_sentence_tensor = torch.load(datadir + "test_tensor.pth")
-        #     test_masks_tensor = torch.load(datadir + "test_masks.pth")
-        #     test_labels_tensor = torch.load(datadir + "test_labels.pth")
 
         self.info['train tensor shape'] = train_sentence_tensor.shape
         self.info['test tensor shape'] = test_labels_tensor.shape
