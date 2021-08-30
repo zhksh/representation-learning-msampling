@@ -74,19 +74,13 @@ if __name__ == '__main__':
 
 
         if epoch_test_accuracy > best_epoch_acc:
+            best_epoch_acc = epoch_test_accuracy
             model.info["test_acc"] = epoch_test_accuracy
             model.info["epoch"] = epoch
-            model.save()
-            best_epoch_acc = epoch_test_accuracy
+            reference_model = copy.deepcopy(model)
         else :
-            if epoch_test_accuracy > best_epoch_acc:
-                best_epoch_acc = epoch_test_accuracy
-                model.info["test_acc"] = epoch_test_accuracy
-                model.info["epoch"] = epoch
-                reference_model = copy.deepcopy(model)
-            else :
-                if bad_epochs > 0: break
-                bad_epochs += 1
+            if bad_epochs > 0: break
+            bad_epochs += 1
 
     print("cross evaluating with " + conf.cross_eval_file)
     cross_evaluation_data_loader = utils.prep_cross_eval_data(conf.cross_eval_file, reference_model)
