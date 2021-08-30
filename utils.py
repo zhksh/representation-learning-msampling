@@ -80,8 +80,7 @@ def sample_data(data, col_name, mode):
     elif mode == "down":
         bound = class_dist.values.min()
     elif mode == "middle":
-        bound = class_dist.values.max()
-    bound =  np.median(class_dist.values)
+        bound =  int(np.median(class_dist.values))
     sampled_classes = []
     for c, count in class_dist.items():
         ups = resample(data[data["Sentiment"] == c],
