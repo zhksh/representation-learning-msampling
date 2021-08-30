@@ -27,12 +27,14 @@ class DistilBertSentiment(ExperimentBase):
         self.softmax = nn.LogSoftmax(dim=1)
 
 
-    def evaluate(self, data_loader, criterion, device=None):
+    def evaluate(self, data_loader, criterion=None, device=None):
         self.eval()
         if device is None:
             device = self.device
         # device = torch.device('cpu')
         self.to(device)
+        if criterion is None:
+            criterion = self.criterion
         accuracy_acc = loss_acc = 0
         losses = []
         with tqdm(data_loader, unit="batch") as batch_generator:
