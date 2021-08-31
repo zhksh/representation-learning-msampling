@@ -76,7 +76,7 @@ in the minority class. While this might work with lowdomensional representations
 this becomes computationally difficult. 
 
 
-##Experiments
+## Experiments
 
 ### Middlesampling
 Addressing the problems arising from up/downsampling we will try a, admittedly naive, compromise strategy of picking the class with the median magnitude
