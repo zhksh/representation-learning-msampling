@@ -20,6 +20,7 @@ if __name__ == "__main__":
                     item['overall'] -= 1
                     if conf.class_mode == 'cls':
                         item['reviewText'] = '[CLS] ' + item['reviewText']
+                        item['reviewText'] = item['reviewText'].strip()
                     json_data.append({'Sentiment' :item['overall'], 'Phrase': item['reviewText']})
                 except Exception as e:
                     print(line)

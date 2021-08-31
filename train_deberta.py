@@ -72,12 +72,12 @@ if __name__ == '__main__':
 
         epoch_test_accuracy = model.evaluate(test_loader)
         model.plot_epoch_stats(epoch)
-
         if epoch_test_accuracy > best_epoch_acc:
             best_epoch_acc = epoch_test_accuracy
             model.info["test_acc"] = epoch_test_accuracy
             model.info["epoch"] = epoch
             reference_model = copy.deepcopy(model)
+            reference_model.save()
         else :
             if bad_epochs > 0: break
             bad_epochs += 1

@@ -78,6 +78,8 @@ if __name__ == '__main__':
             model.info["test_acc"] = epoch_test_accuracy
             model.info["epoch"] = epoch
             reference_model = copy.deepcopy(model)
+            reference_model.save()
+
         else :
             if bad_epochs > 0: break
             bad_epochs += 1
