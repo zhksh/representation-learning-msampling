@@ -94,7 +94,7 @@ The maximum length of the sequences was limited at 150 due to GPU memory constra
 After sampling was performed training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
 but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 2070 8GB with 64GB RAM, that posed a limiting factor.
 
-### Datadimensions
+#### Datadimensions
 |set |        sampling            | size  |
 | ------------- |:-------------:|:----------------:|
 | train         | down            | 31824         | 
@@ -122,6 +122,8 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 | Distillbert   | middle             | cls            |             |                       |
 | DeBerta       | middle             | cls            |             |                       |
 | BERT          | middle             | no_cls         | 0.77        |   0.70                |
+| Distillbert   | middle             | no_cls         |             |                       |
+| DeBerta       | middle             | no_cls         |             |                       |
 | BERT          | middle             | avg            |             |                       |
 | Distillbert   | middle             | avg            |             |                       |
 | DeBerta       | middle             | avg            |             |                       |
