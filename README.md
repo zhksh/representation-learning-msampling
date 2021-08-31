@@ -21,13 +21,13 @@ All models are fairly large but still trainable on a decent setup.
 
 for ``distillbert-base-uncased`` and ``deberta-base-uncased`` parameters are counted after adding the classification head
 ## Data
-###Training
+### Training
 The models are fintuned on the [Movie Review Sentiment Analysis](https://www.kaggle.com/c/movie-review-sentiment-analysis-kernels-only
 ) Dataset by Kaggle, which is based on the [Deep Learning for Sentiment Analysis](https://nlp.stanford.edu/sentiment/) 
 dataset from Stanford which is based on the rottentomatoes.com dataset collected and published by Pang and Lee(2005).
 The original sentences where split into phrases and then hand annotated with a sentiment ranging from negative 0 - 4 positive.
 
-####Sample
+#### Sample
 ```bash
 train.tsv is of the form 
 PhraseId	SentenceId	Phrase	Sentiment
@@ -56,7 +56,7 @@ of the 156,060 samples, unsurprisingly the distribution of classes is heavily do
 
 which, unmitigated, would lead to learning that picking 2 every time would already guarantee around 50% accuracy.
 
-###Evaluation
+### Evaluation
 To measure affects of the experiments and external dataset is used. We use the Amazon Review Dataset in the 
 categories Movies/TV obtained from [https://cseweb.ucsd.edu/~jmcauley/datasets.html](https://cseweb.ucsd.edu/~jmcauley/datasets.html)
 
@@ -67,7 +67,7 @@ Id  Sentiment	Phrase
 ```
 ![](data/reference_full_dist.png)
 
-###Balancing the classes
+### Balancing the classes
 Traditional methods for mitigating problem arising from unbalanced data include simple strategies like up and downsampling or
 more sophisticated ones like SMOTE. 
 While upsampling will inevitably lead to overfitting downsampling will reduce overall performance due to throwing away
@@ -78,11 +78,11 @@ this becomes computationally difficult.
 
 ##Experiments
 
-#### Middlesampling
+### Middlesampling
 Addressing the problems arising from up/downsampling we will try a, admittedly naive, compromise strategy of picking the class with the median magnitude
 , upsample the smaller classes and downsample the larger classes.
 
-#### Classification
+### Classification
 When using a transformer output for classification there is two traditional design choices, either use the 
 representation of the [CLS] token denoting the beginning of the sequence or average all token representations as input
 for the classification head. Since the original data does not use the [CLS] token the variant of just using the 
