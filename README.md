@@ -90,7 +90,7 @@ first token is also tried.
 
 ##Method
 The training set is processed by adding a [CLS] token if needed an then split into stratified train- and testset by a ratio 0.1.
-The maximum length of the sequences was limited at 150 due to memory constraints
+The maximum length of the sequences was limited at 150 due to GPU memory constraints
 After sampling was performed training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
 but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 2070 8GB with 64GB RAM, that posed a limiting factor.
 
@@ -114,7 +114,7 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 
 
 |model |        sampling            | classification  |testset accuracy| cross evaluation accuracy   |
-| ------------- |:-------------:|:-------------:|:-------------:|: -----:|
+| ------------- |:-------------:|:-------------:|:-------------:|:-----:|
 | BERT          | down               | cls            | 0.68        |   0.56                |
 | Distillbert   | down               | cls            | 0.67        |   0.54                |
 | DeBerta       | down               | cls            | 0.68        |   0.57                |
