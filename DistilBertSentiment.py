@@ -12,6 +12,7 @@ class DistilBertSentiment(ExperimentBase):
     def __init__(self, conf, num_classes, hidden_size = 768, dropout_rate=0.3):
         self.conf = conf
         self.conf.actual_name = "distilbert-base-uncased"
+        self.conf.model_name = self.conf.actual_name
         super(DistilBertSentiment, self).__init__(conf)
         self.base_model = DistilBertModel.from_pretrained(self.conf.actual_name)
         self.tokenizer = DistilBertTokenizer.from_pretrained(self.conf.actual_name)
