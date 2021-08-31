@@ -127,3 +127,6 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 | BERT          | middle             | avg            |             |                       |
 | Distillbert   | middle             | avg            |             |                       |
 | DeBerta       | middle             | avg            |             |                       |
+| BERT          | up                 | no_cls         |             |                       |
+| Distillbert   | up                 | no_cls         |             |                       |
+| DeBerta       | up                 | no_cls         |             |                       |
