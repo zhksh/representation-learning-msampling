@@ -26,6 +26,7 @@ class ExperimentBase(nn.Module):
             os.mkdir(self.path)
         self.stats = ExperimentBase.make_stats_dict()
 
+
     def save(self):
         torch.save(self, "{}/{}".format(self.path,"model.torch"))
         with open("{}/{}".format(self.path, 'modelcard.txt'), 'w') as f:

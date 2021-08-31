@@ -1,39 +1,94 @@
 # Sentiment Classification on Movie Reviews (Kaggle)
 This is the final project for the Neural Representation Seminar SS21 @LMU 
 
-https://www.kaggle.com/c/movie-review-sentiment-analysis-kernels-only
+for this project we will consider 3 transformer models, based or identical with BERT for sentiment classification.
+Mainly two aspects will be experimented with, the heavy imbalance in the used dataset and the classification algorithm, 
+namely the classification head.
+All three models are finetuned to the task and a final cross evalutaion is done on an external dataset.
 
-## Model
-out-of-the-box pretrained ``bert-base-uncased`` from the transformers lib from huggingface with multiclassification head
+## Models
+The models considered are ``bert-base-uncased``, ``distillbert-base-uncased`` and ``deberta-base-uncased``.
+We use them in their pretrained form from Huggingface.  For ``distillbert-base-uncased`` and ``deberta-base-uncased`` only the 
+base is used as we use a custom head for the experiments.
+All models are fairly large but still trainable on a decent setup.
 
+
+|               | #parameters    |   |
+| ------------- |:-------------:| -----:|
+| distillbert-base-uncased       | 66,957.317       |  |
+| bert-base-uncased              | 109,486,085      |    |
+| deberta-base-uncased           | 139,394,309         |     |
+
+for ``distillbert-base-uncased`` and ``deberta-base-uncased`` parameters are counted after adding the classification head
 ## Data
+###Training
+The models are fintuned on the [Movie Review Sentiment Analysis](https://www.kaggle.com/c/movie-review-sentiment-analysis-kernels-only
+) Dataset by Kaggle, which is based on the [Deep Learning for Sentiment Analysis](https://nlp.stanford.edu/sentiment/) 
+dataset from Stanford which is based on the rottentomatoes.com dataset collected and published by Pang and Lee(2005).
+The original sentences where split into phrases and then hand annotated with a sentiment ranging from negative 0 - 4 positive.
+
+#####Sample
 ```bash
 train.tsv is of the form 
 PhraseId	SentenceId	Phrase	Sentiment
-1	1	A series of escapades	    2
-2	1	A series	            2
+64      2       This quiet , introspective and entertaining independent is worth seeking .      4
+65      2       This quiet , introspective and entertaining independent 3
+66      2       This    2
+67      2       quiet , introspective and entertaining independent      4
+68      2       quiet , introspective and entertaining  3
+69      2       quiet   2
+70      2       , introspective and entertaining        3
+71      2       introspective and entertaining  3
+72      2       introspective and       3
+73      2       introspective   2
+74      2       and     2
+75      2       entertaining    4
+76      2       independent     2
+77      2       is worth seeking .      3
+78      2       is worth seeking        4
+79      2       is worth        2
+80      2       worth   2
+81      2       seeking 2
 ```
+of the 156,060 samples, unsurprisingly the distribution of classes is heavily dominated by the "neurtal" class 2
 
-![](img/train_class_dist.png)
+![](data/classdist.png)
 
- The dataset is clearly very unbalanced, we should have 50% acc guaranteed if the model picks 2 all the time
-Up/Downsampling shoulf be tried.
-## Usage
+which, unmitigated, would lead to learning that picking 2 every time would already guarantee around 50% accuracy.
+
+###Evaluation
+To measure affects of the experiments and external dataset is used. We use the Amazon Review Dataset in the 
+categories Movies/TV obtained from [https://cseweb.ucsd.edu/~jmcauley/datasets.html](https://cseweb.ucsd.edu/~jmcauley/datasets.html)
+
 ```bash
-./train.py path/to/training_data --split .1
+11	1.0	"Thin plot. Predictable ending.  Beautiful setting.  Recent hurricanes certainly didn't look this romantic. Shouldn't make anyone want to ""ride it out."""
+12	2.0	Oldie but goodie
 ```
-will read data file and splits it into training- and testset by 0.1 
-preserving the distribution of the classes
+![](data/reference_full_dist.png)
 
-```bash
-./eval.py path/to/checkpoint/model path/to/data/testdata
-```
-will evaluate a saved model
 
-```bash
-./submission.py path/to/checkpoint/model path/to/data/testdata
-```
-will create an output file in the format required by the kaggle competition 
+###Balancing the classes
+Traditional methods for mitigating problem arising from unbalanced data include simple strategies like up and downsampling or
+more sophisticated ones like SMOTE. 
+While upsampling will inevitably lead to overfitting downsampling will reduce overall performance due to throwing away
+(possibly most of the) data. SMOTE tries to mitigate the above synthesizing data by computing nearest neighbours of datapoints
+in the minority class. While this might work with lowdomensional representations, with highdimensional token representations
+this becomes computationally difficult. 
+
+
+##Experiments
+
+####Middlesampling
+Addressing the problems arising from up/downsampling we will try a, admittedly naive, compromise strategy of picking the class with the median magnitude
+, upsample the smaller classes and downsample the larger classes.
+
+####Classification
+When using a transformer output for classification there is two traditional design choices, either use the 
+representation of the [CLS] token denoting the beginning of the sequence or average all token representations as input
+for the classification head. Since the original data does not use the [CLS] token the variant of just using the 
+first token is also tried. 
 
 ## Results
-testset accuracy is generally slightly above 70%, which is slightly better than what most participants report
+The datasets used for training differ quite a bit. Max lenth of the kaggle data is 80 tokens while the amazon data exceeds 400 tokens.
+
+We consider changes  in the results rather than absulute values in the bevaluation results.
