@@ -78,23 +78,23 @@ this becomes computationally difficult.
 
 ##Experiments
 
-####Middlesampling
+#### Middlesampling
 Addressing the problems arising from up/downsampling we will try a, admittedly naive, compromise strategy of picking the class with the median magnitude
 , upsample the smaller classes and downsample the larger classes.
 
-####Classification
+#### Classification
 When using a transformer output for classification there is two traditional design choices, either use the 
 representation of the [CLS] token denoting the beginning of the sequence or average all token representations as input
 for the classification head. Since the original data does not use the [CLS] token the variant of just using the 
 first token is also tried. 
 
-##Method
+## Method
 The training set is processed by adding a [CLS] token if needed an then split into stratified train- and testset by a ratio 0.1.
 The maximum length of the sequences was limited at 150 due to GPU memory constraints
 After sampling was performed training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
 but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 2070 8GB with 64GB RAM, that posed a limiting factor.
 
-###Datadimensions
+### Datadimensions
 |set |        sampling            | size  |
 | ------------- |:-------------:|:----------------:|
 | train         | down            | 31824         | 
