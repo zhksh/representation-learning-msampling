@@ -61,11 +61,11 @@ To measure affects of the experiments and external dataset is used. We use the A
 categories Movies/TV obtained from [https://cseweb.ucsd.edu/~jmcauley/datasets.html](https://cseweb.ucsd.edu/~jmcauley/datasets.html)
 
 ```bash
+Id  Sentiment	Phrase
 11	1.0	"Thin plot. Predictable ending.  Beautiful setting.  Recent hurricanes certainly didn't look this romantic. Shouldn't make anyone want to ""ride it out."""
 12	2.0	Oldie but goodie
 ```
 ![](data/reference_full_dist.png)
-
 
 ###Balancing the classes
 Traditional methods for mitigating problem arising from unbalanced data include simple strategies like up and downsampling or
@@ -88,7 +88,40 @@ representation of the [CLS] token denoting the beginning of the sequence or aver
 for the classification head. Since the original data does not use the [CLS] token the variant of just using the 
 first token is also tried. 
 
+##Method
+The training set is processed by adding a [CLS] token if needed an then split into stratified train- and testset by a ratio 0.1.
+The maximum length of the sequences was limited at 150 due to memory constraints
+After sampling was performed training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
+but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 2070 8GB with 64GB RAM, that posed a limiting factor.
+
+###Datadimensions
+|set |        sampling            | size  |
+| ------------- |:-------------:|:----------------:|
+| train         | down            | 31824         | 
+| test          | down            |  3536          | 
+| evaluation    | down            | 28556            | 
+| train         | middle          | 122728         | 
+| test          | middle          |  13637          | 
+| train         | up              | 358119         | 
+| test          | up              |  35810          | 
+
 ## Results
 The datasets used for training differ quite a bit. Max lenth of the kaggle data is 80 tokens while the amazon data exceeds 400 tokens.
+We consider changes  in the results rather than absolute values in the evaluation results.
+Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom classification heads therefore averaging over the outputs is only reported for those
 
-We consider changes  in the results rather than absulute values in the bevaluation results.
+
+
+
+|model |        sampling            | classification  |testset accuracy| cross evaluation accuracy   |
+| ------------- |:-------------:|:-------------:|:-------------:|: -----:|
+| BERT          | down               | cls            | 0.68        |   0.56                |
+| Distillbert   | down               | cls            | 0.67        |   0.54                |
+| DeBerta       | down               | cls            | 0.68        |   0.57                |
+| BERT          | middle             | cls            |             |                       |
+| Distillbert   | middle             | cls            |             |                       |
+| DeBerta       | middle             | cls            |             |                       |
+| BERT          | middle             | no_cls         | 0.77        |   0.70                |
+| BERT          | middle             | avg            |             |                       |
+| Distillbert   | middle             | avg            |             |                       |
+| DeBerta       | middle             | avg            |             |                       |
