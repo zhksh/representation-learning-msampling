@@ -135,4 +135,5 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 
 Unfortunately none of my hypotheses seem to be valid. The scores on the testset as well as cross evaluation seem to 
 be mostly correlated to LM size. The cross evaluation results dont seem to indicate a degree of overfitting,
-which is an expected and almost certain consequence of upsampling.
+which is an expected and almost certain consequence of upsampling while testset accuracy expectedly is strongly correlated
+to datasize with no indicator that the different classification methods had any impact. 
