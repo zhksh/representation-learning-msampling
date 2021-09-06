@@ -21,6 +21,7 @@ if __name__ == '__main__':
         accuracy = model.evaluate(model.test_loader)
         model.info['test acc'] = accuracy
         print(model.format_info())
+        exit(0)
 
     if conf.device != "":
         model.device = torch.device(conf.device)
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     Y = torch.LongTensor(data_eval.Sentiment.values)
     test_dataset = TensorDataset(X, X_mask, Y)
     test_loader = DataLoader(test_dataset, sampler = RandomSampler(test_dataset), batch_size = 16)
-
+    model.reset_stats()
     accuracy = model.evaluate(test_loader)
 
 

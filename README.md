@@ -91,7 +91,7 @@ first token is also tried.
 ## Method
 The training set is processed by adding a [CLS] token if needed an then split into stratified train- and testset by a ratio 0.1.
 The maximum length of the sequences was limited at 150 due to GPU memory constraints
-After sampling was performed training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
+After sampling was performed, training was done for 4 epochs. This should be increased as testaccuracy has not hit the maximum
 but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 2070 8GB with 64GB RAM, that posed a limiting factor.
 
 #### Datadimensions
@@ -99,7 +99,7 @@ but one epoch DeBerta training took around 45m on a intel i9 K9900 and a NVIDIA 
 | ------------- |:-------------:|:----------------:|
 | train         | down            | 31824         | 
 | test          | down            |  3536          | 
-| evaluation    | down            | 28556            | 
+| evaluation    | down            | 14240            | 
 | train         | middle          | 122728         | 
 | test          | middle          |  13637          | 
 | train         | up              | 358119         | 
@@ -115,18 +115,24 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 
 |model |        sampling            | classification  |testset accuracy| cross evaluation accuracy   |
 | ------------- |:-------------:|:-------------:|:-------------:|:-----:|
-| BERT          | down               | cls            | 0.68        |   0.56                |
-| Distillbert   | down               | cls            | 0.67        |   0.54                |
-| DeBerta       | down               | cls            | 0.68        |   0.57                |
-| BERT          | middle             | cls            |             |                       |
-| Distillbert   | middle             | cls            |             |                       |
-| DeBerta       | middle             | cls            |             |                       |
-| BERT          | middle             | no_cls         | 0.77        |   0.70                |
-| Distillbert   | middle             | no_cls         |             |                       |
-| DeBerta       | middle             | no_cls         |             |                       |
-| BERT          | middle             | avg            |             |                       |
-| Distillbert   | middle             | avg            |             |                       |
-| DeBerta       | middle             | avg            |             |                       |
-| BERT          | up                 | no_cls         |             |                       |
-| Distillbert   | up                 | no_cls         |             |                       |
-| DeBerta       | up                 | no_cls         |             |                       |
+| BERT          | down               | cls            | 0.68        |   0.44                |
+| Distillbert   | down               | cls            | 0.67        |   0.41                |
+| DeBerta       | down               | cls            | 0.68        |   0.46                |
+| BERT          | middle             | cls            | 0.77        |   0.45                |
+| Distillbert   | middle             | cls            | 0.76        |   0.43                |
+| DeBerta       | middle             | cls            | 0.77        |   0.46                |
+| BERT          | middle             | no_cls         | 0.77        |   0.44                |
+| Distillbert   | middle             | no_cls         | 0.77        |   0.44                |
+| DeBerta       | middle             | no_cls         | 0.77        |   0.47                |
+| BERT          | middle             | avg            | 0.78        |   0.45                |
+| Distillbert   | middle             | avg            | 0.77        |   0.44                |
+| DeBerta*      | middle             | avg            | 0.73        |   0.45                |
+| BERT          | up                 | no_cls         |  0.87       |   0.45                |
+| Distillbert   | up                 | no_cls         |  0.86       |   0.42                |
+| DeBerta       | up                 | no_cls         |  0.86       |   0.47                |
+
+* trained only one epoch, due to memory error
+
+Unfortunately none of my hypotheses seem to be valid. The scores on the testset as well as cross evaluation seem to 
+be mostly and exclusively correlated to LM size. The cross evaluation results dont seem to indicate a degree of overfitting,
+which is an expected and almost certain consequence of upsampling.

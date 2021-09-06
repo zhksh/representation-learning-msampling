@@ -189,7 +189,8 @@ class ExperimentBase(nn.Module):
 
 
 
-
+    def reset_stats(self):
+        self.stats = ExperimentBase.make_stats_dict()
 
 
     @staticmethod
