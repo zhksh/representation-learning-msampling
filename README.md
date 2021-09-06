@@ -134,5 +134,5 @@ Only ``distillbert-base-uncased`` and ``deberta-base-uncased`` have custom class
 * trained only one epoch, due to memory error
 
 Unfortunately none of my hypotheses seem to be valid. The scores on the testset as well as cross evaluation seem to 
-be mostly and exclusively correlated to LM size. The cross evaluation results dont seem to indicate a degree of overfitting,
+be mostly correlated to LM size. The cross evaluation results dont seem to indicate a degree of overfitting,
 which is an expected and almost certain consequence of upsampling.
